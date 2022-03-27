@@ -1,6 +1,10 @@
 # LineChartView-Android
 静态波形、动态实时波形绘制
 
+# Demo效果图
+
+<img src="https://github.com/zhangzicheng2019/LineChartView-Android/blob/master/demo.gif" style="zoom:100%;" />
+
 # 使用
 
 - 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/chart-android.svg)](https://jitpack.io/#zicheng2019/chart-android)）
@@ -16,7 +20,7 @@ repositories {
  
  //Add it in your app build.gradle
  dependencies {
-     implementation 'com.github.zicheng2019:banner-android:$version'
+     implementation 'com.github.zicheng2019:chart-android:$version'
  } 
 ```
 
