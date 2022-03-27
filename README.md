@@ -3,7 +3,7 @@
 
 # Demo效果图
 
-<img src="https://github.com/zhangzicheng2019/LineChartView-Android/blob/master/demo.gif" style="zoom:100%;" />
+<img src="https://github.com/zicheng2019/LineChartView-Android/blob/master/demo.gif" style="zoom:100%;" />
 
 # 使用
 
