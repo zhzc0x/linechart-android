@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         (1..20).forEach { i ->
             pointList.add(PointInfo(i.toFloat(), (-100..100).random().toFloat()))
         }
-        binding.lineChartView.setLimitArray(listOf(-50, 0, 50, 100))
+        binding.lineChartView.setLimitArray(listOf(-50f, 0f, 50f, 100f))
         binding.lineChartView.setData(pointList, yAxisList = listOf(
             AxisInfo(-100f),
             AxisInfo(-50f),

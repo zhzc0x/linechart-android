@@ -28,51 +28,6 @@
     <attr name="drawCurve" format="boolean" />
     <attr name="lineChartBgColor" format="reference|color" />
 
-    <declare-styleable name="LiveLineChartView">
-        <!-- 是否显示Y轴 -->
-        <attr name="showYAxis" />
-        <!-- Y轴颜色 -->
-        <attr name="yAxisColor"/>
-        <!-- Y轴线宽 -->
-        <attr name="yAxisWidth"/>
-        <!-- 是否显示Y轴文字 -->
-        <attr name="showYText"/>
-        <!-- Y轴文字颜色 -->
-        <attr name="yTextColor"/>
-        <!-- Y轴文字尺寸 -->
-        <attr name="yTextSize"/>
-        <!-- Y轴文字位置 -->
-        <attr name="yTextAlign"/>
-        <!-- 是否显示Y轴刻度线 -->
-        <attr name="showYScaleLine"/>
-        <!-- Y轴刻度线颜色 -->
-        <attr name="yScaleLineColor"/>
-        <!-- Y轴刻度线线宽 -->
-        <attr name="yScaleLineWidth" />
-        <!-- Y轴刻度线长度 -->
-        <attr name="yScaleLineLength" />
-
-        <attr name="limitLineColor" />
-        <attr name="limitLineWidth" />
-        <attr name="limitLineLength" />
-        <attr name="limitLineSpace" />
-
-        <!-- 折线宽度 -->
-        <attr name="lineChartWidth"/>
-        <!-- 折线颜色 -->
-        <attr name="lineChartColor"/>
-        <!-- 折线区域距离左边的距离 -->
-        <attr name="lineChartPaddingStart" />
-        <!-- 背景颜色 -->
-        <attr name="lineChartBgColor" />
-        <!-- 绘制曲线 -->
-        <attr name="drawCurve" />
-
-        <attr name="limitLineCount" format="integer" />
-        <attr name="pointSpace" format="dimension" />
-    </declare-styleable>
-
-
     <declare-styleable name="LineChartView">
         <!-- 是否显示X轴 -->
         <attr name="showXAxis" format="boolean" />
@@ -183,7 +138,50 @@
         <attr name="floatBoxTextSize" format="dimension" />
         <!-- 悬浮框边距离文本的距离 -->
         <attr name="floatBoxPadding" format="dimension" />
+    </declare-styleable>
 
+    <declare-styleable name="LiveLineChartView">
+        <!-- 是否显示Y轴 -->
+        <attr name="showYAxis" />
+        <!-- Y轴颜色 -->
+        <attr name="yAxisColor"/>
+        <!-- Y轴线宽 -->
+        <attr name="yAxisWidth"/>
+        <!-- 是否显示Y轴文字 -->
+        <attr name="showYText"/>
+        <!-- Y轴文字颜色 -->
+        <attr name="yTextColor"/>
+        <!-- Y轴文字尺寸 -->
+        <attr name="yTextSize"/>
+        <!-- Y轴文字位置 -->
+        <attr name="yTextAlign"/>
+        <!-- 是否显示Y轴刻度线 -->
+        <attr name="showYScaleLine"/>
+        <!-- Y轴刻度线颜色 -->
+        <attr name="yScaleLineColor"/>
+        <!-- Y轴刻度线线宽 -->
+        <attr name="yScaleLineWidth" />
+        <!-- Y轴刻度线长度 -->
+        <attr name="yScaleLineLength" />
+
+        <attr name="limitLineColor" />
+        <attr name="limitLineWidth" />
+        <attr name="limitLineLength" />
+        <attr name="limitLineSpace" />
+
+        <!-- 折线宽度 -->
+        <attr name="lineChartWidth"/>
+        <!-- 折线颜色 -->
+        <attr name="lineChartColor"/>
+        <!-- 折线区域距离左边的距离 -->
+        <attr name="lineChartPaddingStart" />
+        <!-- 背景颜色 -->
+        <attr name="lineChartBgColor" />
+        <!-- 绘制曲线 -->
+        <attr name="drawCurve" />
+
+        <attr name="limitLineCount" format="integer" />
+        <attr name="pointSpace" format="dimension" />
     </declare-styleable>
 
 </resources>

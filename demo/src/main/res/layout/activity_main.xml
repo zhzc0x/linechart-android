@@ -36,10 +36,7 @@
         app:yTextAlign="center"
         app:yTextSize="10sp"
         app:pointStartX="24dp"
-        app:pointEndX="24dp"
-        >
-
-    </com.github.zicheng.chart.LineChartView>
+        app:pointEndX="24dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"

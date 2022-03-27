@@ -90,7 +90,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
 
     //折线点对应的数据
     private var pointList: List<PointInfo> = ArrayList()
-    private var limitArray: List<Int>? = null
+    private var limitArray: List<Float>? = null
     //原点坐标x
     private var originX = 0f
     //原点坐标y
@@ -395,7 +395,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         }
     }
 
-    fun setLimitArray(limitArray: List<Int>) {
+    fun setLimitArray(limitArray: List<Float>) {
         this.limitArray = limitArray
     }
 
@@ -407,7 +407,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 limitLinePath!!.reset()
             }
             limitArray!!.forEach {
-                val y = getDrawY(it.toFloat())
+                val y = getDrawY(it)
                 limitLinePath!!.moveTo(originX, y)
                 limitLinePath!!.lineTo(viewWidth.toFloat(), y)
             }
