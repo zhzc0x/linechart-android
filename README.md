@@ -7,7 +7,8 @@
 
 # 使用
 
-- 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/chart-android.svg)](https://jitpack.io/#zicheng2019/chart-android)）
+- 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/LineChartView-Android.svg)](https://jitpack.io/#zicheng2019/LineChartView-Android)
+）
 
 ```groovy
 //Add it in your root build.gradle at the end of repositories:
