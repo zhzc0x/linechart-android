@@ -51,7 +51,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
                 groupId = 'com.github.zicheng2019'
-                artifactId = 'chart-android'
+                artifactId = 'linechart-android'
                 version = project.versionName
             }
         }
