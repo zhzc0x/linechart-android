@@ -3,11 +3,11 @@
 
 # Demo效果图
 
-<img src="https://github.com/zicheng2019/LineChartView-Android/blob/master/demo.gif" style="zoom:100%;" />
+<img src="https://github.com/zicheng2019/linechart-android/blob/master/demo.gif" style="zoom:100%;" />
 
 # 使用
 
-- 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/LineChartView-Android.svg)](https://jitpack.io/#zicheng2019/LineChartView-Android)
+- 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/linechart-android.svg)](https://jitpack.io/#zicheng2019/linechart-android)
 ）
 
 ```groovy
@@ -21,7 +21,7 @@ repositories {
  
  //Add it in your app build.gradle
  dependencies {
-     implementation 'com.github.zicheng2019:chart-android:$version'
+     implementation 'com.github.zicheng2019:linechart-android:$version'
  } 
 ```
 
