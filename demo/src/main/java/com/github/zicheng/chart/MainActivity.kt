@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivity() {
         binding.pointSpaceSpinner.adapter = ArrayAdapter(this, R.layout.item_spinner_textview,
             pointSpaceList)
         binding.pointSpaceSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?,
-                                        position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val pointSpace = pointSpaceList[position].replace("dp", "").toFloat()
                 binding.liveLineChartView.setPointSpace(pointSpace)
             }

@@ -641,8 +641,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 val velocityY = velocityTracker!!.yVelocity.toInt()
                 val velocityX = velocityTracker!!.xVelocity.toInt()
                 val y = event.y.toInt()
-                scroller.fling(slideX.toInt(), y, velocityX, velocityY,
-                    minSlideX.toInt(), maxSlideX.toInt(), y, y)
+                scroller.fling(slideX.toInt(), y, velocityX, velocityY, minSlideX.toInt(), maxSlideX.toInt(), y, y)
                 ViewCompat.postOnAnimation(this, flingRunnable)
                 velocityTracker!!.recycle()
                 velocityTracker = null
