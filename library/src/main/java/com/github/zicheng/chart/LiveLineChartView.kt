@@ -322,16 +322,20 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         lineChartPath.reset()
     }
 
-    /** 设置是否绘制曲线 */
+    /**
+     * 设置是否绘制曲线
+     * @see R.attr.drawCurve
+     * */
     fun setDrawCurve(drawCurve: Boolean){
         this.drawCurve = drawCurve
     }
 
     /**
      * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：dp
+     * @see R.attr.pointSpace
      * */
-    fun setPointSpace(pointSpace: Float){
-        this.pointSpace = pointSpace.dp
+    fun setPointSpace(pointSpaceDp: Float){
+        this.pointSpace = pointSpaceDp.dp
         updateMaxPointCount()
         while (pointList.size > screenMaxPointCount) {
             pointList.removeAt(0)

@@ -734,19 +734,28 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         lineChartPath.reset()
     }
 
-    /** 设置是否绘制曲线 */
+    /**
+     * 设置是否绘制曲线
+     * @see R.attr.drawCurve
+     * */
     fun setDrawCurve(drawCurve: Boolean){
         this.drawCurve = drawCurve
         invalidate()
     }
 
-    /** 设置是否显示折线点 */
+    /**
+     * 设置是否显示折线点
+     * @see R.attr.showLineChartPoint
+     * */
     fun setShowLineChartPoint(show: Boolean){
         showLineChartPoint = show
         invalidate()
     }
 
-    /** 设置显示折线动画 */
+    /**
+     * 设置显示折线动画
+     * @see R.attr.showLineChartAnim
+     * */
     fun showLineChartAnim(){
         if(!showLineChartAnim){
             currentAnimValue = -1f
@@ -766,7 +775,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     /**
-     * 设置折线点绘制开始和结束的位置 Unit: dp
+     * 设置折线点绘制开始和结束的位置
+     * @see R.attr.pointXStart = startDp
+     * @see R.attr.pointXEnd = endDp
      *
      * */
     fun setPointXInit(startDp: Int, endDp: Int){
@@ -781,7 +792,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * 设置折线数据
      *
      * @param pointList 点的集合
-     * @param xAxisList X轴数据集合
+     * @param xAxisList X轴数据集合，设置为null时=pointList.map { AxisInfo(it.x)}
      * @param yAxisList Y轴数据集合
      * @param pointSpace 点的间距
      *

@@ -81,16 +81,40 @@ class LineChartView {
     
     /** 设置限制线 */
     fun setLimitArray(limitArray: List<Float>)
-    
-    /** 设置是否绘制曲线 */
+
+    /**
+     * 设置是否绘制曲线
+     * @see R.attr.drawCurve
+     * */
     fun setDrawCurve(drawCurve: Boolean)
 
-    /** 设置是否显示折线点 */
+    /**
+     * 设置是否显示折线点
+     * @see R.attr.showLineChartPoint
+     * */
     fun setLineChartPoint(show: Boolean)
 
-    /** 设置显示折线动画 */
+    /**
+     * 设置显示折线动画
+     * @see R.attr.showLineChartAnim
+     * */
     fun showLineChartAnim()
 
+    /**
+     * 设置显示指定折线点信息list
+     * 设置后showLineChartPoint和showPointFloatBox属性失效，设置null后恢复
+     *
+     * */
+    fun setShowPoints(showPointList: List<ShowPointInfo>?)
+
+    /**
+     * 设置折线点绘制开始和结束的位置
+     * @see R.attr.pointXStart = startDp
+     * @see R.attr.pointXEnd = endDp
+     *
+     * */
+    fun setPointXInit(startDp: Int, endDp: Int)
+    
     /**
      * 设置折线数据
      *
@@ -121,14 +145,18 @@ class LiveLineChartView {
 	
     /** 清空当前屏幕所有的折线点 */
     fun reset()
-    
-    /** 设置是否绘制曲线 */
+
+    /**
+     * 设置是否绘制曲线
+     * @see R.attr.drawCurve
+     * */
     fun setDrawCurve(drawCurve: Boolean)
 
     /**
      * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：dp
+     * @see R.attr.pointSpace
      * */
-    fun setPointSpace(pointSpace: Float)
+    fun setPointSpace(pointSpaceDp: Float)
 
     /** 设置自动缩放Y轴最大值 */
     fun setAutoZoomYMax(autoZoomYMax: Boolean)
@@ -246,9 +274,9 @@ class LiveLineChartView {
         <!-- 折线点选中外描边颜色 -->
         <attr name="pointSelectedOutStrokeColor" format="reference|color" />
         <!-- 折线点开始绘制的位置 -->
-        <attr name="pointStartX" format="dimension" />
+        <attr name="pointXStart" format="dimension" />
         <!-- 折线点结束绘制的位置 -->
-        <attr name="pointEndX" format="dimension" />
+        <attr name="pointXEnd" format="dimension" />
 
         <!-- 是否显示折线点悬浮框 -->
         <attr name="showPointFloatBox" format="boolean" />
