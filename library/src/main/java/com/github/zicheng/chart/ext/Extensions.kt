@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 internal val displayMetrics: DisplayMetrics = Resources.getSystem().displayMetrics
 
@@ -19,10 +20,9 @@ internal val Int.dp
         TypedValue.COMPLEX_UNIT_DIP,
         this.toFloat(),
         displayMetrics
-    )
+    ).toInt()
 
 internal fun Float.scale(scale: Int): Float{
-    return BigDecimal(this.toDouble())
-        .setScale(scale, BigDecimal.ROUND_HALF_UP).toFloat()
+    return BigDecimal(this.toDouble()).setScale(scale, RoundingMode.HALF_UP).toFloat()
 }
 

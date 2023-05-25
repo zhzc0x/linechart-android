@@ -12,25 +12,25 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
                                               defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private var showYAxis = true
     private var yAxisColor = Color.GRAY
-    private var yAxisWidth = 1.dp
+    private var yAxisWidth = 1f.dp
     private var showYText = true
     private var yTextColor = 0
-    private var yTextSize = 10.dp
+    private var yTextSize = 10f.dp
     private var yTextAlign = TextAlign.RIGHT
     private var showYScaleLine = true
     private var yScaleLineColor = 0
-    private var yScaleLineWidth = 1.dp
-    private var yScaleLineLength = 4.dp
+    private var yScaleLineWidth = 1f.dp
+    private var yScaleLineLength = 4f.dp
 
     private var limitLineColor = Color.GRAY
-    private var limitLineWidth = 1.dp
-    private var limitLineLength = 2.dp
-    private var limitLineSpace = 2.dp
+    private var limitLineWidth = 1f.dp
+    private var limitLineLength = 2f.dp
+    private var limitLineSpace = 2f.dp
     private var limitLineCount = 2
 
     private var lineChartWidth = 1.5f.dp
     private var lineChartColor = Color.LTGRAY
-    private var lineChartPaddingStart = 30.dp.toInt()
+    private var lineChartPaddingStart = 30.dp
     private var lineChartBgColor = Color.WHITE
     private var drawCurve = false//绘制曲线
     private var pointSpace = 1.2f.dp//折线点间距
@@ -135,13 +135,13 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     private var viewHeight = 0
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         if (!changed) {
-            super.onLayout(changed, left, top, right, bottom)
+            super.onLayout(false, left, top, right, bottom)
             return
         }
         viewWidth = width
         viewHeight = height
         initData()
-        super.onLayout(changed, left, top, right, bottom)
+        super.onLayout(true, left, top, right, bottom)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -160,11 +160,6 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         if(!showYScaleLine && !showYText){
             return
         }
-        textPaint.textAlign = when (yTextAlign) {
-            TextAlign.LEFT -> Paint.Align.LEFT
-            TextAlign.CENTER -> Paint.Align.CENTER
-            TextAlign.RIGHT -> Paint.Align.RIGHT
-        }
         yAxisList.forEach { axisInfo ->
             if (showYScaleLine) {
                 linePaint.color = yScaleLineColor
@@ -176,6 +171,11 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
             if (showYText) {
                 textPaint.color = yTextColor
                 textPaint.textSize = yTextSize
+                textPaint.textAlign = when (yTextAlign) {
+                    TextAlign.LEFT -> Paint.Align.LEFT
+                    TextAlign.CENTER -> Paint.Align.CENTER
+                    TextAlign.RIGHT -> Paint.Align.RIGHT
+                }
                 val textX = when (yTextAlign) {
                     TextAlign.LEFT -> yScaleLineLength
                     TextAlign.CENTER -> (xOrigin - yScaleLineLength) / 2
