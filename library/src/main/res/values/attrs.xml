@@ -124,9 +124,9 @@
         <!-- 折线点选中外描边颜色 -->
         <attr name="pointSelectedOutStrokeColor" format="reference|color" />
         <!-- 折线点开始绘制的位置 -->
-        <attr name="pointStartX" format="dimension" />
+        <attr name="pointXStart" format="dimension" />
         <!-- 折线点结束绘制的位置 -->
-        <attr name="pointEndX" format="dimension" />
+        <attr name="pointXEnd" format="dimension" />
 
         <!-- 是否显示折线点悬浮框 -->
         <attr name="showPointFloatBox" format="boolean" />
