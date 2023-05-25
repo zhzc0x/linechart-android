@@ -19,8 +19,8 @@
         app:drawCurve="false"
         app:limitLineWidth="1dp"
         app:lineChartColor="#16422C"
-        app:lineChartPaddingBottom="12dp"
         app:lineChartPaddingStart="42dp"
+        app:lineChartPaddingBottom="20dp"
         app:lineChartWidth="2dp"
         app:showAxisArrow="true"
         app:showLineChartAnim="true"
@@ -28,15 +28,15 @@
         app:showPointFloatBox="true"
         app:showXAxis="true"
         app:showXScaleLine="true"
-        app:showXText="false"
+        app:showXText="true"
         app:showYAxis="true"
         app:showYScaleLine="true"
         app:showYText="true"
         app:yTextColor="#16422C"
         app:yTextAlign="center"
         app:yTextSize="10sp"
-        app:pointStartX="24dp"
-        app:pointEndX="24dp"/>
+        app:pointXStart="0dp"
+        app:pointXEnd="0dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,11 +59,58 @@
             android:textAlignment="textStart"
             android:spinnerMode="dropdown" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="pointXInit："/>
+
+        <Spinner
+            android:id="@+id/pointXStartSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:spinnerMode="dropdown" />
+
+        <Spinner
+            android:id="@+id/pointXEndSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
         <CheckBox
             android:id="@+id/cbShowChartPoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="显示折线点" />
+
+        <CheckBox
+            android:id="@+id/cbShowPoints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12.dp"
+            android:text="显示指定折线点" />
 
     </LinearLayout>
 
@@ -87,7 +134,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
@@ -111,7 +157,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
@@ -135,7 +180,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="12dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
