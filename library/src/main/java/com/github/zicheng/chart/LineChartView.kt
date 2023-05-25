@@ -22,47 +22,47 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                                               defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private var showXAxis = true
     private var xAxisColor = Color.GRAY
-    private var xAxisWidth = 1.dp
+    private var xAxisWidth = 1f.dp
     private var showXText = true
     private var xTextColor = 0
-    private var xTextSize = 10.dp
+    private var xTextSize = 10f.dp
     private var showXScaleLine = true
     private var xScaleLineColor = 0
-    private var xScaleLineWidth = 1.dp
-    private var xScaleLineLength = 4.dp
+    private var xScaleLineWidth = 1f.dp
+    private var xScaleLineLength = 4f.dp
 
     private var showYAxis = true
     private var yAxisColor = Color.GRAY
-    private var yAxisWidth = 1.dp
+    private var yAxisWidth = 1f.dp
     private var showYText = true
     private var yTextColor = 0
-    private var yTextSize = 10.dp
+    private var yTextSize = 10f.dp
     private var yTextAlign = TextAlign.LEFT
     private var showYScaleLine = true
     private var yScaleLineColor = 0
-    private var yScaleLineWidth = 1.dp
-    private var yScaleLineLength = 4.dp
+    private var yScaleLineWidth = 1f.dp
+    private var yScaleLineLength = 4f.dp
 
     private var showAxisArrow = true
-    private var axisArrowWidth = 6.dp
-    private var axisArrowHeight = 3.dp
+    private var axisArrowWidth = 6f.dp
+    private var axisArrowHeight = 3f.dp
     private var axisArrowColor = Color.GRAY
 
     private var limitLineColor = Color.GRAY
-    private var limitLineWidth = 1.dp
-    private var limitLineLength = 2.dp
-    private var limitLineSpace = 2.dp
+    private var limitLineWidth = 1f.dp
+    private var limitLineLength = 2f.dp
+    private var limitLineSpace = 2f.dp
 
     private var lineChartWidth = 1.5f.dp
     private var lineChartColor = Color.LTGRAY
-    private var lineChartPaddingTop = 30.dp.toInt()
-    private var lineChartPaddingBottom = 15.dp.toInt()
-    private var lineChartPaddingStart = 30.dp.toInt()
+    private var lineChartPaddingTop = 30.dp
+    private var lineChartPaddingBottom = 15.dp
+    private var lineChartPaddingStart = 30.dp
     private var lineChartBgColor = Color.WHITE
     private var drawCurve = false//绘制曲线
     private var showLineChartAnim = false
 
-    private var showLineChartPoint = true
+    private var showLineChartPoint = false
     private var pointRadius = 3f.dp
     private var pointColor = Color.WHITE
     private var pointStrokeWidth = 0f
@@ -73,14 +73,14 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     private var pointSelectedStrokeColor = 0
     private var pointSelectedOutStrokeWidth = 0f
     private var pointSelectedOutStrokeColor = Color.parseColor("#99FFFFFF")
-    private var pointStartX = 0
-    private var pointEndX = 0
+    private var pointXStart = 0
+    private var pointXEnd = 0
 
     private var showPointFloatBox = true
-    private var floatBoxPadding = 4.dp
+    private var floatBoxPadding = 4f.dp
     private var floatBoxColor = Color.WHITE
     private var floatBoxTextColor = Color.GRAY
-    private var floatBoxTextSize = 12.dp
+    private var floatBoxTextSize = 12f.dp
 
     private lateinit var linePaint: Paint
     private lateinit var lineChartPaint: Paint
@@ -130,6 +130,8 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     private var clearRect = RectF()
     private var xTextHeight = 0
     private var yTextHeight = 0
+
+    private var showPointList: List<ShowPointInfo>? = null
 
     init {
         if(attrs != null){
@@ -204,8 +206,8 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             (pointRadius + pointStrokeWidth / 2).toInt()).toFloat()
         pointSelectedOutStrokeColor = ta.getColor(R.styleable.LineChartView_pointSelectedOutStrokeColor, pointSelectedOutStrokeColor)
         pointSelectedOutStrokeWidth = ta.getDimensionPixelSize(R.styleable.LineChartView_pointSelectedOutStrokeWidth, pointSelectedRadius.toInt()).toFloat()
-        pointStartX = ta.getDimensionPixelSize(R.styleable.LineChartView_pointStartX, pointStartX)
-        pointEndX = ta.getDimensionPixelSize(R.styleable.LineChartView_pointEndX, pointEndX)
+        pointXStart = ta.getDimensionPixelSize(R.styleable.LineChartView_pointXStart, pointXStart)
+        pointXEnd = ta.getDimensionPixelSize(R.styleable.LineChartView_pointXEnd, pointXEnd)
 
         showPointFloatBox = ta.getBoolean(R.styleable.LineChartView_showPointFloatBox, showPointFloatBox)
         floatBoxColor = ta.getColor(R.styleable.LineChartView_floatBoxColor, floatBoxColor)
@@ -232,7 +234,6 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         limitPaint.pathEffect = DashPathEffect(floatArrayOf(limitLineSpace, limitLineLength), 0f)
         pointPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         pointPaint.strokeCap = Paint.Cap.ROUND
-        pointPaint.textAlign = Paint.Align.CENTER
         textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     }
 
@@ -241,14 +242,14 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             selectedIndex = pointList.size - 1
         }
         if(pointSpace > 0){
-            drawWidth = pointSpace * xAxisList.size - pointEndX
-            minSlideX = viewWidth - pointSpace * xAxisList.size - pointStartX
+            drawWidth = pointSpace * xAxisList.size - pointXEnd
+            minSlideX = viewWidth - pointSpace * xAxisList.size - pointXStart
             //如果大于0，说明绘制没有超过当前View宽度，不需要滑动
             if(minSlideX > 0){
                 minSlideX = maxSlideX
             }
         } else {
-            drawWidth = (viewWidth - lineChartPaddingStart).toFloat() - pointStartX - pointEndX
+            drawWidth = (viewWidth - lineChartPaddingStart).toFloat() - pointXStart - pointXEnd
             minSlideX = maxSlideX
         }
         Timber.d("slideX=$slideX, minSlideX=$minSlideX, maxSlideX=$maxSlideX")
@@ -258,7 +259,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     private var viewHeight = 0
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         if (!changed) {
-            super.onLayout(changed, left, top, right, bottom)
+            super.onLayout(false, left, top, right, bottom)
             return
         }
         viewWidth = width
@@ -270,11 +271,12 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         maxSlideX = slideX
         saveRect.set(0f, 0f, viewWidth.toFloat(), viewHeight.toFloat())
         clearRect.set(0f, 0f, originX, viewHeight.toFloat())
-        super.onLayout(changed, left, top, right, bottom)
+        super.onLayout(true, left, top, right, bottom)
     }
 
     private val porterDuffMode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
     override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
         if (pointList.isNotEmpty()) {
             canvas.drawColor(lineChartBgColor)
             drawXAxis(canvas)
@@ -287,9 +289,16 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             } else {
                 drawLineChart(canvas)
             }
-            if(showLineChartPoint){
-                drawLineChartPoint(canvas)
+            if(showPointList == null){
+                if(showLineChartPoint){
+                    //绘制所有折现点
+                    drawLineChartPoint(canvas)
+                }
+            } else {
+                //绘制指定折现点
+                drawShowPointList(canvas)
             }
+
             // 将折线超出x轴坐标的部分截取掉
             linePaint.xfermode = porterDuffMode
             canvas.drawRect(clearRect, linePaint)
@@ -338,6 +347,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             if (showXText) {
                 textPaint.color = xTextColor
                 textPaint.textSize = xTextSize
+                textPaint.textAlign = Paint.Align.CENTER
                 canvas.drawText(axisInfo.showText, 0, axisInfo.showText.length, x,
                     originY + (lineChartPaddingBottom + xTextHeight) / 2f, textPaint)
             }
@@ -368,11 +378,6 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         if(!showYScaleLine && !showYText){
             return
         }
-        textPaint.textAlign = when (yTextAlign) {
-            TextAlign.LEFT -> Paint.Align.LEFT
-            TextAlign.CENTER -> Paint.Align.CENTER
-            TextAlign.RIGHT -> Paint.Align.RIGHT
-        }
         yAxisList.forEachIndexed { _, axisInfo ->
             if (showYScaleLine) {
                 linePaint.color = yScaleLineColor
@@ -380,10 +385,14 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 val y = getDrawY(axisInfo.value)
                 canvas.drawLine(originX, y, originX - yScaleLineLength, y, linePaint)
             }
-
             if (showYText) {
                 textPaint.color = yTextColor
                 textPaint.textSize = yTextSize
+                textPaint.textAlign = when (yTextAlign) {
+                    TextAlign.LEFT -> Paint.Align.LEFT
+                    TextAlign.CENTER -> Paint.Align.CENTER
+                    TextAlign.RIGHT -> Paint.Align.RIGHT
+                }
                 val textX = when (yTextAlign) {
                     TextAlign.LEFT -> yScaleLineLength
                     TextAlign.CENTER -> (originX - yScaleLineLength) / 2
@@ -416,7 +425,34 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     /**
-     * 绘制折线点
+     * 绘制指定折线点
+     *
+     * @param canvas
+     */
+    private fun drawShowPointList(canvas: Canvas){
+        var x: Float
+        var y: Float
+        showPointList!!.forEach { showPoint ->
+            x = getDrawX(showPoint.x)
+            y = getDrawY(showPoint.y)
+            pointPaint.style = Paint.Style.FILL
+            pointPaint.color = showPoint.color
+            canvas.drawCircle(x, y, showPoint.radius, pointPaint)
+            if(showPoint.strokeWidth > 0){
+                pointPaint.style = Paint.Style.STROKE
+                pointPaint.strokeWidth = showPoint.strokeWidth
+                pointPaint.color = showPoint.strokeColor
+                canvas.drawCircle(x, y, showPoint.radius, pointPaint)
+            }
+            textPaint.color = showPoint.textColor
+            textPaint.textSize = showPoint.textSize
+            textPaint.textAlign = Paint.Align.CENTER
+            canvas.drawText(showPoint.text, x, y - showPoint.textPadding - showPoint.radius, textPaint)
+        }
+    }
+
+    /**
+     * 绘制所有折线点
      *
      * @param canvas
      */
@@ -467,8 +503,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         pointPaint.style = Paint.Style.FILL
         val text = value.scale(2).toString()
         val rect = Rect()
-        textPaint.textSize = floatBoxTextSize
         textPaint.color = floatBoxTextColor
+        textPaint.textSize = floatBoxTextSize
+        textPaint.textAlign = Paint.Align.CENTER
         textPaint.getTextBounds(text, 0, text.length, rect)
 
         val boxWidth = rect.width() / 2f + floatBoxPadding
@@ -571,7 +608,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun getDrawX(pointX: Float): Float {
-        return slideX + drawWidth * ((pointX - xMin) / (xMax - xMin)) + pointStartX
+        return slideX + drawWidth * ((pointX - xMin) / (xMax - xMin)) + pointXStart
     }
 
     private fun getDrawY(pointY: Float): Float {
@@ -674,9 +711,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             val point = pointList[index]
             val x = getDrawX(point.x)
             val y = getDrawY(point.y)
-            if (eventX >= x - clickArea && eventX <= x + clickArea &&
-                eventY >= y - clickArea && eventY <= y + clickArea && selectedIndex != index
-            ) {//每个节点周围8dp都是可点击区域
+                //每个节点周围8dp都是可点击区域
+            if (eventX >= x - clickArea && eventX <= x + clickArea && eventY >= y - clickArea
+                && eventY <= y + clickArea && selectedIndex != index) {
                 selectedIndex = index
                 invalidate()
                 return
@@ -704,7 +741,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     /** 设置是否显示折线点 */
-    fun setLineChartPoint(show: Boolean){
+    fun setShowLineChartPoint(show: Boolean){
         showLineChartPoint = show
         invalidate()
     }
@@ -716,6 +753,28 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             showLineChartAnim = true
             invalidate()
         }
+    }
+
+    /**
+     * 设置显示指定折线点信息list
+     * 设置后showLineChartPoint和showPointFloatBox属性失效，设置null后恢复
+     *
+     * */
+    fun setShowPoints(showPointList: List<ShowPointInfo>?){
+        this.showPointList = showPointList
+        invalidate()
+    }
+
+    /**
+     * 设置折线点绘制开始和结束的位置 Unit: dp
+     *
+     * */
+    fun setPointXInit(startDp: Int, endDp: Int){
+        pointXStart = startDp.dp
+        pointXEnd = endDp.dp
+        //重新初始化绘制数据
+        initData()
+        invalidate()
     }
 
     /**
