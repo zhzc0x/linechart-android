@@ -101,18 +101,18 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-        val yMaxList = listOf("0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
+        val yAmplitudeRangeList = listOf("0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
         binding.yMaxSpinner.adapter = ArrayAdapter(this, R.layout.item_spinner_textview,
-            yMaxList)
+            yAmplitudeRangeList)
         binding.yMaxSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?,
                                         position: Int, id: Long) {
-                if(position == yMaxList.size - 1){
+                if(position == yAmplitudeRangeList.size - 1){
                     binding.liveLineChartView.setAutoZoomYMax(true)
                 } else {
-                    val yMax = yMaxList[position].toFloat()
-                    binding.liveLineChartView.setData(listOf(AxisInfo(yMax),
-                        AxisInfo(0f), AxisInfo(-yMax)), yAxisUnit = "mV")
+                    val amplitudeRange = yAmplitudeRangeList[position].toFloat()
+                    binding.liveLineChartView.setData(listOf(AxisInfo(amplitudeRange),
+                        AxisInfo(0f), AxisInfo(-amplitudeRange)), yAxisUnit = "mV")
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             delay(1000)
             while (true){
-                delay(20)
+                delay(16)
                 binding.liveLineChartView.addPoint((-9000..9000).random() / 10000f)
             }
         }

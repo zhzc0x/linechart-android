@@ -166,7 +166,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:text="Y轴最大值："/>
+            android:text="Y轴幅值范围：±"/>
 
         <Spinner
             android:id="@+id/yMaxSpinner"
