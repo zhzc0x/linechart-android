@@ -41,8 +41,8 @@ repositories {
     app:drawCurve="false"
     app:limitLineWidth="1dp"
     app:lineChartColor="#16422C"
-    app:lineChartPaddingBottom="12dp"
     app:lineChartPaddingStart="42dp"
+    app:lineChartPaddingBottom="20dp"
     app:lineChartWidth="2dp"
     app:showAxisArrow="true"
     app:showLineChartAnim="true"
@@ -50,15 +50,15 @@ repositories {
     app:showPointFloatBox="true"
     app:showXAxis="true"
     app:showXScaleLine="true"
-    app:showXText="false"
+    app:showXText="true"
     app:showYAxis="true"
     app:showYScaleLine="true"
     app:showYText="true"
     app:yTextColor="#16422C"
     app:yTextAlign="center"
     app:yTextSize="10sp"
-    app:pointStartX="24dp"
-    app:pointEndX="24dp"/>
+    app:pointXStart="0dp"
+    app:pointXEnd="0dp"/>
 
 //动态实时波形LiveLineChartView
 <com.github.zicheng.chart.LiveLineChartView
