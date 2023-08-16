@@ -1,4 +1,4 @@
-package com.github.zicheng.chart
+package com.zhzc0x.chart.demo
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,10 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
-import com.github.zicheng.chart.databinding.ActivityMainBinding
+import com.zhzc0x.chart.AxisInfo
+import com.zhzc0x.chart.PointInfo
+import com.zhzc0x.chart.ShowPointInfo
+import com.zhzc0x.chart.demo.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -35,7 +38,8 @@ class MainActivity : AppCompatActivity() {
             AxisInfo(-50f, "-50"),
             AxisInfo(0f, "0"),
             AxisInfo(50f, "50"),
-            AxisInfo(100f, "100")), pointSpace = 60f)
+            AxisInfo(100f, "100")
+        ), pointSpace = 60f)
         binding.drawTypeSpinner.adapter = ArrayAdapter(this, R.layout.item_spinner_textview,
             listOf("折线", "曲线"))
         binding.drawTypeSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
@@ -78,7 +82,8 @@ class MainActivity : AppCompatActivity() {
             ShowPointInfo(pointList[2].x, pointList[2].y, 9f, Color.WHITE, 3.5f,
                 Color.RED, pointList[2].y.toString(),32f, Color.RED,12f),
             ShowPointInfo(pointList[6].x, pointList[6].y, 9f, Color.WHITE, 3.5f,
-                Color.BLUE, pointList[6].y.toString(),32f, Color.BLUE,12f))
+                Color.BLUE, pointList[6].y.toString(),32f, Color.BLUE,12f)
+        )
         binding.cbShowPoints.setOnCheckedChangeListener{ _, checked ->
             if(checked){
                 binding.lineChartView.setShowPoints(showPointList)
@@ -111,8 +116,10 @@ class MainActivity : AppCompatActivity() {
                     binding.liveLineChartView.setAutoZoomYMax(true)
                 } else {
                     val amplitudeRange = yAmplitudeRangeList[position].toFloat()
-                    binding.liveLineChartView.setData(listOf(AxisInfo(amplitudeRange),
-                        AxisInfo(0f), AxisInfo(-amplitudeRange)), yAxisUnit = "mV")
+                    binding.liveLineChartView.setData(listOf(
+                        AxisInfo(amplitudeRange),
+                        AxisInfo(0f), AxisInfo(-amplitudeRange)
+                    ), yAxisUnit = "mV")
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {

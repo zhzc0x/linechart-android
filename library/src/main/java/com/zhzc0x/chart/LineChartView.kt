@@ -1,4 +1,4 @@
-package com.github.zicheng.chart
+package com.zhzc0x.chart
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -13,8 +13,8 @@ import android.widget.OverScroller
 import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
-import com.github.zicheng.chart.ext.dp
-import com.github.zicheng.chart.ext.scale
+import com.zhzc0x.chart.ext.dp
+import com.zhzc0x.chart.ext.scale
 import timber.log.Timber
 import kotlin.math.abs
 
@@ -199,10 +199,12 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         pointStrokeColor = ta.getColor(R.styleable.LineChartView_pointStrokeColor, lineChartColor)
         pointStrokeWidth = ta.getDimensionPixelSize(R.styleable.LineChartView_pointStrokeWidth, (lineChartWidth / 2).toInt()).toFloat()
         pointSelectedStrokeColor = ta.getColor(R.styleable.LineChartView_pointSelectedStrokeColor, lineChartColor)
-        pointSelectedStrokeWidth = ta.getDimensionPixelSize(R.styleable.LineChartView_pointSelectedStrokeWidth,
+        pointSelectedStrokeWidth = ta.getDimensionPixelSize(
+            R.styleable.LineChartView_pointSelectedStrokeWidth,
             (pointStrokeWidth * 2).toInt()).toFloat()
         pointSelectedColor = ta.getColor(R.styleable.LineChartView_pointSelectedColor, pointColor)
-        pointSelectedRadius = ta.getDimensionPixelSize(R.styleable.LineChartView_pointSelectedRadius,
+        pointSelectedRadius = ta.getDimensionPixelSize(
+            R.styleable.LineChartView_pointSelectedRadius,
             (pointRadius + pointStrokeWidth / 2).toInt()).toFloat()
         pointSelectedOutStrokeColor = ta.getColor(R.styleable.LineChartView_pointSelectedOutStrokeColor, pointSelectedOutStrokeColor)
         pointSelectedOutStrokeWidth = ta.getDimensionPixelSize(R.styleable.LineChartView_pointSelectedOutStrokeWidth, pointSelectedRadius.toInt()).toFloat()
@@ -800,7 +802,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     @JvmOverloads
     fun setData(pointList: List<PointInfo>, xAxisList: List<AxisInfo>? = null, yAxisList: List<AxisInfo>, pointSpace: Float = 0f){
         this.pointList = pointList.sortedBy { it.x }
-        this.xAxisList = xAxisList?.sortedBy { it.value } ?: this.pointList.map { AxisInfo(it.x)}
+        this.xAxisList = xAxisList?.sortedBy { it.value } ?: this.pointList.map { AxisInfo(it.x) }
         this.yAxisList = yAxisList.sortedBy { it.value }
         this.pointSpace = pointSpace
         doOnPreDraw {

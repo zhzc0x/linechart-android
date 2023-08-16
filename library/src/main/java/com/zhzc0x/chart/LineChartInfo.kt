@@ -1,4 +1,4 @@
-package com.github.zicheng.chart
+package com.zhzc0x.chart
 
 import android.graphics.Color
 import androidx.annotation.ColorInt

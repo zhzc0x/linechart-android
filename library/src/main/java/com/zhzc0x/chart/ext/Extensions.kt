@@ -1,4 +1,4 @@
-package com.github.zicheng.chart.ext
+package com.zhzc0x.chart.ext
 
 import android.content.res.Resources
 import android.util.DisplayMetrics

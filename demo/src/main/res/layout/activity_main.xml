@@ -1,203 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <com.github.zicheng.chart.LineChartView
-        android:id="@+id/lineChartView"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_gravity="start"
-        android:layout_marginTop="12dp"
-        app:axisArrowHeight="4dp"
-        app:axisArrowWidth="7dp"
-        app:lineChartBgColor="#f1f1f1"
-        app:drawCurve="false"
-        app:limitLineWidth="1dp"
-        app:lineChartColor="#16422C"
-        app:lineChartPaddingStart="42dp"
-        app:lineChartPaddingBottom="20dp"
-        app:lineChartWidth="2dp"
-        app:showAxisArrow="true"
-        app:showLineChartAnim="true"
-        app:showLineChartPoint="false"
-        app:showPointFloatBox="true"
-        app:showXAxis="true"
-        app:showXScaleLine="true"
-        app:showXText="true"
-        app:showYAxis="true"
-        app:showYScaleLine="true"
-        app:showYText="true"
-        app:yTextColor="#16422C"
-        app:yTextAlign="center"
-        app:yTextSize="10sp"
-        app:pointXStart="0dp"
-        app:pointXEnd="0dp"/>
+    tools:context="com.zhzc0x.chart.demo.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <TextView
+        <com.zhzc0x.chart.LineChartView
+            android:id="@+id/lineChartView"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_gravity="start"
+            android:layout_marginTop="12dp"
+            app:axisArrowHeight="4dp"
+            app:axisArrowWidth="7dp"
+            app:lineChartBgColor="#f1f1f1"
+            app:drawCurve="false"
+            app:limitLineWidth="1dp"
+            app:lineChartColor="#16422C"
+            app:lineChartPaddingStart="42dp"
+            app:lineChartPaddingBottom="20dp"
+            app:lineChartWidth="2dp"
+            app:showAxisArrow="true"
+            app:showLineChartAnim="true"
+            app:showLineChartPoint="false"
+            app:showPointFloatBox="true"
+            app:showXAxis="true"
+            app:showXScaleLine="true"
+            app:showXText="true"
+            app:showYAxis="true"
+            app:showYScaleLine="true"
+            app:showYText="true"
+            app:yTextColor="#16422C"
+            app:yTextAlign="center"
+            app:yTextSize="10sp"
+            app:pointXStart="0dp"
+            app:pointXEnd="0dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="绘制类型："/>
+
+            <Spinner
+                android:id="@+id/drawTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="pointXInit："/>
+
+            <Spinner
+                android:id="@+id/pointXStartSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+            <Spinner
+                android:id="@+id/pointXEndSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/cbShowChartPoint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="显示折线点" />
+
+            <CheckBox
+                android:id="@+id/cbShowPoints"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12.dp"
+                android:text="显示指定折线点" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAnim"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="绘制类型："/>
+            android:layout_marginStart="16dp"
+            android:text="折线动画" />
 
-        <Spinner
-            android:id="@+id/drawTypeSpinner"
-            android:layout_width="wrap_content"
+        <com.zhzc0x.chart.LiveLineChartView
+            android:id="@+id/liveLineChartView"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="12dp"
+            app:lineChartBgColor="#f1f1f1"
+            app:lineChartPaddingStart="50dp"
+            app:pointSpace="2dp"
+            app:limitLineCount="3"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="绘制类型："/>
+
+            <Spinner
+                android:id="@+id/drawTypeSpinner2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="Y轴幅值范围：±"/>
+
+            <Spinner
+                android:id="@+id/yMaxSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="折线点间距："/>
+
+            <Spinner
+                android:id="@+id/pointSpaceSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="pointXInit："/>
-
-        <Spinner
-            android:id="@+id/pointXStartSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/pointXEndSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/cbShowChartPoint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="显示折线点" />
-
-        <CheckBox
-            android:id="@+id/cbShowPoints"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12.dp"
-            android:text="显示指定折线点" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/btnAnim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="折线动画" />
-
-    <com.github.zicheng.chart.LiveLineChartView
-        android:id="@+id/liveLineChartView"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginTop="12dp"
-        app:lineChartBgColor="#f1f1f1"
-        app:lineChartPaddingStart="50dp"
-        app:pointSpace="2dp"
-        app:limitLineCount="3"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="绘制类型："/>
-
-        <Spinner
-            android:id="@+id/drawTypeSpinner2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="Y轴幅值范围：±"/>
-
-        <Spinner
-            android:id="@+id/yMaxSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="折线点间距："/>
-
-        <Spinner
-            android:id="@+id/pointSpaceSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:spinnerMode="dropdown" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</ScrollView>

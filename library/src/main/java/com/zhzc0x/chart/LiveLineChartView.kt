@@ -1,11 +1,11 @@
-package com.github.zicheng.chart
+package com.zhzc0x.chart
 
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import com.github.zicheng.chart.ext.dp
+import com.zhzc0x.chart.ext.dp
 import timber.log.Timber
 
 class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
