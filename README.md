@@ -3,11 +3,11 @@
 
 # Demo效果图
 
-<img src="https://github.com/zicheng2019/linechart-android/blob/master/demo.gif" style="zoom:100%;" />
+<img src="https://github.com/zhzc0x/linechart-android/blob/master/demo.gif" style="zoom:100%;" />
 
 # 使用
 
-- 添加gradle依赖（version=[![](https://jitpack.io/v/zicheng2019/linechart-android.svg)](https://jitpack.io/#zicheng2019/linechart-android)
+- 添加gradle依赖（version=[![](https://jitpack.io/v/zhzc0x/linechart-android.svg)](https://jitpack.io/#zhzc0x/linechart-android)
 ）
 
 ```groovy
@@ -21,7 +21,7 @@ repositories {
  
  //Add it in your app build.gradle
  dependencies {
-     implementation 'com.github.zicheng2019:linechart-android:$version'
+     implementation 'com.github.zhzc0x:linechart-android:$version'
  } 
 ```
 
@@ -29,7 +29,7 @@ repositories {
 
 ```xml
 //静态波形LineChartView
-<com.github.zicheng.chart.LineChartView
+<com.zhzc0x.chart.LineChartView
     android:id="@+id/lineChartView"
     android:layout_width="match_parent"
     android:layout_height="120dp"
@@ -61,7 +61,7 @@ repositories {
     app:pointXEnd="0dp"/>
 
 //动态实时波形LiveLineChartView
-<com.github.zicheng.chart.LiveLineChartView
+<com.zhzc0x.chart.LiveLineChartView
         android:id="@+id/liveLineChartView"
         android:layout_width="match_parent"
         android:layout_height="120dp"
@@ -340,7 +340,7 @@ class LiveLineChartView {
 # License
 
 ```
-Copyright 2022 zicheng2019
+Copyright 2022 zhzc0x
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
