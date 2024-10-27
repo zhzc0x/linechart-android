@@ -126,7 +126,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun updateMaxPointCount() {
-        screenMaxPointCount = (viewWidth - lineChartPaddingStart) / pointSpace.toInt()
+        screenMaxPointCount = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
         Timber.d("drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
                 "pointSpace=${pointSpace}, screenMaxPointCount=$screenMaxPointCount")
     }
@@ -331,11 +331,11 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     /**
-     * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：dp
+     * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：px
      * @see R.attr.pointSpace
      * */
-    fun setPointSpace(pointSpaceDp: Float){
-        this.pointSpace = pointSpaceDp.dp
+    fun setPointSpace(pointSpace: Float){
+        this.pointSpace = pointSpace
         updateMaxPointCount()
         while (pointList.size > screenMaxPointCount) {
             pointList.removeAt(0)

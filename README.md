@@ -153,10 +153,10 @@ class LiveLineChartView {
     fun setDrawCurve(drawCurve: Boolean)
 
     /**
-     * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：dp
+     * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：px
      * @see R.attr.pointSpace
      * */
-    fun setPointSpace(pointSpaceDp: Float)
+    fun setPointSpace(pointSpace: Float)
 
     /** 设置自动缩放Y轴最大值 */
     fun setAutoZoomYMax(autoZoomYMax: Boolean)
