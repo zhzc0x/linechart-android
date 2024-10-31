@@ -22,7 +22,8 @@ internal val Int.dp
         displayMetrics
     ).toInt()
 
-internal fun Float.scale(scale: Int): Float{
+internal fun Float.scale(scale: Int): Float {
     return BigDecimal(this.toDouble()).setScale(scale, RoundingMode.HALF_UP).toFloat()
 }
+
 

@@ -134,7 +134,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     private var showPointList: List<ShowPointInfo>? = null
 
     init {
-        if(attrs != null){
+        if (attrs != null) {
             initCustomAttrs(context, attrs)
         }
         initPaint()
@@ -219,7 +219,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         ta.recycle()
     }
 
-    private fun initPaint(){
+    private fun initPaint() {
         linePaint = Paint(Paint.ANTI_ALIAS_FLAG)
         linePaint.style = Paint.Style.FILL
         linePaint.strokeCap = Paint.Cap.ROUND
@@ -240,10 +240,10 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun initData() {
-        if(showPointFloatBox) {
+        if (showPointFloatBox) {
             selectedIndex = pointList.size - 1
         }
-        if(pointSpace > 0){
+        if (pointSpace > 0) {
             drawWidth = pointSpace * xAxisList.size - pointXEnd
             minSlideX = viewWidth - pointSpace * xAxisList.size - pointXStart
             //如果大于0，说明绘制没有超过当前View宽度，不需要滑动
@@ -286,12 +286,12 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             drawLimitLine(canvas)
             //重新开一个图层
             val layerId = canvas.saveLayer(saveRect, null)
-            if(showLineChartAnim){
+            if (showLineChartAnim) {
                 drawAnimBrokenLine(canvas)
             } else {
                 drawLineChart(canvas)
             }
-            if(showPointList == null){
+            if (showPointList == null) {
                 if(showLineChartPoint){
                     //绘制所有折现点
                     drawLineChartPoint(canvas)
@@ -311,7 +311,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun drawXAxis(canvas: Canvas) {
-        if(showXAxis){
+        if (showXAxis) {
             linePaint.color = xAxisColor
             linePaint.strokeWidth = xAxisWidth
             val stopX = if (showAxisArrow) {
@@ -323,7 +323,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             Timber.d("stopX = $stopX")
             if (showAxisArrow) {
                 linePaint.color = axisArrowColor
-                if(xAxisArrowPath == null){
+                if (xAxisArrowPath == null) {
                     xAxisArrowPath = Path()
                     xAxisArrowPath!!.moveTo(viewWidth.toFloat() - axisArrowWidth, (originY - axisArrowHeight))
                     xAxisArrowPath!!.lineTo(viewWidth.toFloat() - xAxisWidth, originY * 1f)
@@ -332,7 +332,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 canvas.drawPath(xAxisArrowPath!!, linePaint)
             }
         }
-        if(!showXScaleLine && !showXText){
+        if (!showXScaleLine && !showXText) {
             return
         }
         xAxisList.forEach { axisInfo ->
@@ -357,7 +357,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun drawYAxis(canvas: Canvas) {
-        if(showYAxis){
+        if (showYAxis) {
             linePaint.color = yAxisColor
             linePaint.strokeWidth = yAxisWidth
             val stopY = if (showAxisArrow) {
@@ -377,7 +377,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 canvas.drawPath(yAxisArrowPath!!, linePaint)
             }
         }
-        if(!showYScaleLine && !showYText){
+        if (!showYScaleLine && !showYText) {
             return
         }
         yAxisList.forEachIndexed { _, axisInfo ->
@@ -411,7 +411,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     }
 
     private fun drawLimitLine(canvas: Canvas) {
-        if(limitArray != null){
+        if (limitArray != null) {
             if(limitLinePath == null){
                 limitLinePath = Path()
             } else {
@@ -440,7 +440,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             pointPaint.style = Paint.Style.FILL
             pointPaint.color = showPoint.color
             canvas.drawCircle(x, y, showPoint.radius, pointPaint)
-            if(showPoint.strokeWidth > 0){
+            if (showPoint.strokeWidth > 0) {
                 pointPaint.style = Paint.Style.STROKE
                 pointPaint.strokeWidth = showPoint.strokeWidth
                 pointPaint.color = showPoint.strokeColor
@@ -468,7 +468,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             pointPaint.style = Paint.Style.FILL
             pointPaint.color = pointColor
             canvas.drawCircle(x, y, pointRadius, pointPaint)
-            if(pointStrokeWidth > 0){
+            if (pointStrokeWidth > 0) {
                 pointPaint.style = Paint.Style.STROKE
                 pointPaint.strokeWidth = pointStrokeWidth
                 pointPaint.color = pointStrokeColor
@@ -486,7 +486,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             canvas.drawCircle(selectedX, selectedY, pointSelectedRadius + pointSelectedOutStrokeWidth, pointPaint)
             pointPaint.color = pointSelectedColor
             canvas.drawCircle(selectedX, selectedY, pointSelectedRadius, pointPaint)
-            if(pointSelectedStrokeWidth > 0){
+            if (pointSelectedStrokeWidth > 0) {
                 pointPaint.style = Paint.Style.STROKE
                 pointPaint.strokeWidth = pointSelectedStrokeWidth
                 pointPaint.color = pointSelectedStrokeColor
@@ -514,7 +514,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         val boxHeight = rect.height() + floatBoxPadding * 2
         val cornerPathEffect = CornerPathEffect(2.5f.dp)
         pointPaint.pathEffect = cornerPathEffect
-        if(textBoxPath == null){
+        if (textBoxPath == null) {
             textBoxPath = Path()
         } else {
             textBoxPath!!.reset()
@@ -540,7 +540,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         pointList.forEachIndexed { index, point ->
             endX = getDrawX(point.x)
             endY = getDrawY(point.y)
-            if(drawCurve){
+            if (drawCurve) {
                 //绘制曲线（三阶贝塞尔曲线）
                 if (index == 0) {
                     lineChartPath.moveTo(endX, endY)
@@ -565,12 +565,12 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     private var currentAnimValue: Float = -1f
     private var animPathMeasure: PathMeasure? = null
     private fun drawAnimBrokenLine(canvas: Canvas) {
-        if(currentAnimValue == -1f){
+        if (currentAnimValue == -1f) {
             lineChartPath.reset()
             pointList.forEachIndexed { index, point ->
                 endX = getDrawX(point.x)
                 endY = getDrawY(point.y)
-                if(drawCurve){
+                if (drawCurve) {
                     //绘制曲线（三阶贝塞尔曲线）
                     if (index == 0) {
                         lineChartPath.moveTo(endX, endY)
@@ -582,7 +582,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                     startY = endY
                 } else {
                     //绘制折线
-                    if(index == 0){
+                    if (index == 0) {
                         lineChartPath.moveTo(endX, endY)
                     } else {
                         lineChartPath.lineTo(endX, endY)
@@ -618,7 +618,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         return drawHeight - drawHeight * ((pointY - yMin) / (yMax - yMin)) + lineChartPaddingTop
     }
 
-    enum class SlideSate{
+    enum class SlideSate {
         LEFT_AND_RIGHT, UP_AND_DOWN, NONE
     }
 
@@ -633,7 +633,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         //判断动画播放中和禁止滑动
-        if(currentAnimValue > 0f){
+        if (currentAnimValue > 0f) {
             return false
         }
         if (velocityTracker == null) {
@@ -646,20 +646,20 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 downY = event.y
             }
             MotionEvent.ACTION_MOVE -> {
-                if(slideSate == SlideSate.NONE){
+                if (slideSate == SlideSate.NONE) {
                     distanceX = abs(event.x - downX)
                     distanceY = abs(event.y - downY)
                     Timber.d("downX=$downX,downY=$downY, distanceX=$distanceX,distanceY=$distanceY")
-                    if(distanceX > 20 && distanceX > distanceY){
+                    if (distanceX > 20 && distanceX > distanceY) {
                         startTouchX = event.x
                         slideSate = SlideSate.LEFT_AND_RIGHT
                     }
-                    if(distanceY > 20 && distanceY > distanceX){
+                    if (distanceY > 20 && distanceY > distanceX) {
                         slideSate = SlideSate.UP_AND_DOWN
                     }
-                } else if(slideSate == SlideSate.UP_AND_DOWN){
+                } else if (slideSate == SlideSate.UP_AND_DOWN) {
                     parent.requestDisallowInterceptTouchEvent(false)
-                } else if(slideSate == SlideSate.LEFT_AND_RIGHT){
+                } else if (slideSate == SlideSate.LEFT_AND_RIGHT) {
                     parent.requestDisallowInterceptTouchEvent(true)
                     val moveX = event.x - startTouchX
                     startTouchX = event.x
@@ -673,7 +673,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 slideSate = SlideSate.NONE
-                if(showPointFloatBox){
+                if (showPointFloatBox) {
                     clickAction(event)
                 }
                 velocityTracker!!.computeCurrentVelocity(500)
@@ -689,8 +689,8 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
         return true
     }
 
-    private val flingRunnable = Runnable{
-        if(slideSate == SlideSate.NONE && scroller.computeScrollOffset()){
+    private val flingRunnable = Runnable {
+        if (slideSate == SlideSate.NONE && scroller.computeScrollOffset()) {
             slideX = scroller.currX.toFloat()
             invalidate()
             postOnAnimation()
@@ -740,7 +740,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * 设置是否绘制曲线
      * @see R.attr.drawCurve
      * */
-    fun setDrawCurve(drawCurve: Boolean){
+    fun setDrawCurve(drawCurve: Boolean) {
         this.drawCurve = drawCurve
         invalidate()
     }
@@ -749,7 +749,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * 设置是否显示折线点
      * @see R.attr.showLineChartPoint
      * */
-    fun setShowLineChartPoint(show: Boolean){
+    fun setShowLineChartPoint(show: Boolean) {
         showLineChartPoint = show
         invalidate()
     }
@@ -758,7 +758,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * 设置显示折线动画
      * @see R.attr.showLineChartAnim
      * */
-    fun showLineChartAnim(){
+    fun showLineChartAnim() {
         if(!showLineChartAnim){
             currentAnimValue = -1f
             showLineChartAnim = true
@@ -771,7 +771,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * 设置后showLineChartPoint和showPointFloatBox属性失效，设置null后恢复
      *
      * */
-    fun setShowPoints(showPointList: List<ShowPointInfo>?){
+    fun setShowPoints(showPointList: List<ShowPointInfo>?) {
         this.showPointList = showPointList
         invalidate()
     }
@@ -782,7 +782,7 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      * @see R.attr.pointXEnd = endDp
      *
      * */
-    fun setPointXInit(startDp: Int, endDp: Int){
+    fun setPointXInit(startDp: Int, endDp: Int) {
         pointXStart = startDp.dp
         pointXEnd = endDp.dp
         //重新初始化绘制数据
@@ -800,7 +800,12 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
      *
      * */
     @JvmOverloads
-    fun setData(pointList: List<PointInfo>, xAxisList: List<AxisInfo>? = null, yAxisList: List<AxisInfo>, pointSpace: Float = 0f){
+    fun setData(
+        pointList: List<PointInfo>,
+        xAxisList: List<AxisInfo>? = null,
+        yAxisList: List<AxisInfo>,
+        pointSpace: Float = 0f
+    ) {
         this.pointList = pointList.sortedBy { it.x }
         this.xAxisList = xAxisList?.sortedBy { it.value } ?: this.pointList.map { AxisInfo(it.x) }
         this.yAxisList = yAxisList.sortedBy { it.value }
@@ -810,5 +815,4 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             invalidate()
         }
     }
-
 }

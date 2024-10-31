@@ -1,6 +1,5 @@
 package com.zhzc0x.chart
 
-import android.graphics.Color
 import androidx.annotation.ColorInt
 
 internal enum class TextAlign {

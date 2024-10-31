@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import android.view.View
 import com.zhzc0x.chart.ext.dp
 import timber.log.Timber
+import kotlin.math.abs
+import kotlin.math.max
 
 class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
                                               defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
@@ -41,7 +43,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     private lateinit var textPaint: TextPaint
 
     //折线点对应的数据
-    private var pointList = ArrayList<Float>()
+    private val pointList = ArrayList<Float>()
     //x起始位置
     private var xOrigin = 0f
     //y起始位置
@@ -50,16 +52,17 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     private var yMin = 0f
     private var yMax = 1f
     //y轴坐标对应的数据
-    private var yAxisList = ArrayList<AxisInfo>()
+    private val yAxisList = ArrayList<AxisInfo>()
     private var yAxisUnit = ""
-    private var autoZoomYMax = false //自动缩放Y轴最大最小值
     private val lineChartPath = Path()
     private var limitLinePath: Path? = null
     private var yTextHeight = 0f
-    private var screenMaxPointCount = 0
+    private var autoAmplitude = false // 自动缩放Y轴幅值
+    private var screenMaxPoints = 0 // 屏幕最大点数
+    private var autoPoints = 0 // 自动缩放Y轴幅值点数阈值
 
     init {
-        if(attrs != null){
+        if (attrs != null) {
             initCustomAttrs(context, attrs)
         }
         initPaint()
@@ -96,7 +99,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         ta.recycle()
     }
 
-    private fun initPaint(){
+    private fun initPaint() {
         linePaint = Paint(Paint.ANTI_ALIAS_FLAG)
         linePaint.strokeCap = Paint.Cap.ROUND
         lineChartPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -113,7 +116,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
     }
 
-    private fun initData(){
+    private fun initData() {
         xOrigin = lineChartPaddingStart + yAxisWidth
         yOrigin = viewHeight.toFloat()
         updateMaxPointCount()
@@ -126,9 +129,13 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun updateMaxPointCount() {
-        screenMaxPointCount = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
+        screenMaxPoints = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
         Timber.d("drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
-                "pointSpace=${pointSpace}, screenMaxPointCount=$screenMaxPointCount")
+                "pointSpace=${pointSpace}, screenMaxPoints=$screenMaxPoints")
+        // 边界case：防止页面未测量完成时出现负数
+        if (screenMaxPoints < 0) {
+            screenMaxPoints = 0
+        }
     }
 
     private var viewWidth = 0
@@ -152,15 +159,16 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private fun drawYAxis(canvas: Canvas) {
-        if(showYAxis){
+        if (showYAxis) {
             linePaint.color = yAxisColor
             linePaint.strokeWidth = yAxisWidth
             canvas.drawLine(xOrigin, yOrigin, xOrigin, 0f, linePaint)
         }
-        if(!showYScaleLine && !showYText){
+        if (!showYScaleLine && !showYText) {
             return
         }
         yAxisList.forEach { axisInfo ->
+            Timber.d("drawYAxis: $axisInfo")
             if (showYScaleLine) {
                 linePaint.color = yScaleLineColor
                 linePaint.strokeWidth = yScaleLineWidth
@@ -192,8 +200,8 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
      *
      * */
     private fun drawLimitLine(canvas: Canvas) {
-        if(limitLineCount > 0){
-            if(limitLinePath == null){
+        if (limitLineCount > 0) {
+            if (limitLinePath == null) {
                 limitLinePath = Path()
             } else {
                 limitLinePath!!.reset()
@@ -217,7 +225,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         pointList.forEachIndexed { index, y ->
             endX = getDrawX(index)
             endY = getDrawY(y)
-            if(drawCurve){
+            if (drawCurve) {
                 //绘制曲线（三阶贝塞尔曲线）
                 if (index == 0) {
                     lineChartPath.moveTo(endX, endY)
@@ -259,57 +267,44 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         return drawHeight - drawHeight * ((temp - yMin) / (yMax - yMin)) + yTextHeight / 2
     }
 
-    private fun calculateYMax() {
-        Timber.d("calculateYMax")
-        var yMax = 0f
-        pointList.forEach {
-            if (it > 0) {
-                if (it >= yMax) {
-                    yMax = it
-                }
-            } else {
-                if (-it >= yMax) {
-                    yMax = -it
-                }
-            }
-        }
-        yMax = ((yMax * 1.2f) * 100).toInt() / 100f//保留小数点后两位
-        if (yAxisList.last().value != yMax && yMax != 0f) {
-            yAxisList[0] = AxisInfo(-yMax)
-            yAxisList[2] = AxisInfo(yMax)
-            updateYMaxMin()
-        }
-    }
-
-    private var multipleTime = 1f
-    private var pointCount = 0
     fun addPoint(point: Float) {
-        if (pointList.size > screenMaxPointCount) {
+        if (pointList.size > screenMaxPoints) {
             pointList.removeAt(0)
         }
         pointList.add(point)
-        if(autoZoomYMax){
-            //控制每绘制固定的点数后计算一次Y轴最大值
-            if(pointCount >= screenMaxPointCount * multipleTime){
-                pointCount = 0
-                calculateYMax()
-            } else {
-                pointCount++
-            }
+        if (autoAmplitude) {
+            calculateAmplitude(point)
         }
         invalidate()
     }
 
-    /**
-     * 设置自动缩放Y轴最大最小值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
-     *  @param multipleTime: 绘制一屏幕点的时间倍数
-     *
-     * */
-    fun setAutoZoomInterval(multipleTime: Float){
-        this.multipleTime = multipleTime
+    private var timeMultiple = 1f
+    private var maxPoint = 0f
+    private fun calculateAmplitude(point: Float) {
+        maxPoint = max(maxPoint, abs(point))
+        // 控制每绘制固定的点数后计算一次幅值
+        if (autoPoints >= screenMaxPoints * timeMultiple) {
+            autoPoints = 0
+            maxPoint = ((maxPoint * 1.2f) * 100).toInt() / 100f // 保留小数点后两位
+            yAxisList[0] = AxisInfo(-maxPoint)
+            yAxisList[yAxisList.lastIndex] = AxisInfo(maxPoint)
+            maxPoint = 0f
+            updateAmplitude()
+        } else {
+            autoPoints++
+        }
     }
 
-    fun reset(){
+    /**
+     * 设置自动缩放Y轴幅值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
+     *  @param timeMultiple: 绘制一屏幕点的时间倍数
+     *  @see screenMaxPoints
+     * */
+    fun setAutoAmplitudeInterval(timeMultiple: Float) {
+        this.timeMultiple = timeMultiple
+    }
+
+    fun reset() {
         pointList.clear()
         invalidate()
     }
@@ -326,7 +321,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
      * 设置是否绘制曲线
      * @see R.attr.drawCurve
      * */
-    fun setDrawCurve(drawCurve: Boolean){
+    fun setDrawCurve(drawCurve: Boolean) {
         this.drawCurve = drawCurve
     }
 
@@ -334,43 +329,41 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
      * 设置折线点间距，距离越大，折线移动速度越快，反之越小，单位：px
      * @see R.attr.pointSpace
      * */
-    fun setPointSpace(pointSpace: Float){
+    fun setPointSpace(pointSpace: Float) {
         this.pointSpace = pointSpace
         updateMaxPointCount()
-        while (pointList.size > screenMaxPointCount) {
+        while (pointList.size > screenMaxPoints) {
             pointList.removeAt(0)
         }
     }
 
-    /** 设置自动缩放Y轴最大值 */
-    fun setAutoZoomYMax(autoZoomYMax: Boolean){
-        this.autoZoomYMax = autoZoomYMax
-        pointCount = pointList.size
+    /** 设置是否自动缩放Y轴幅值 */
+    fun setAutoAmplitude(autoAmplitude: Boolean) {
+        this.autoAmplitude = autoAmplitude
+        autoPoints = pointList.size
     }
 
     /**
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
-     * @param autoZoomYMax 自动缩放Y轴最大值
+     * @param autoAmplitude 是否自动缩放Y轴幅值
      *
      * */
     @JvmOverloads
-    fun setData(yAxisList: List<AxisInfo>, autoZoomYMax: Boolean = false, yAxisUnit: String = ""){
-        this.autoZoomYMax = autoZoomYMax
+    fun setData(yAxisList: List<AxisInfo>, autoAmplitude: Boolean = false, yAxisUnit: String = "") {
+        this.autoAmplitude = autoAmplitude
         this.yAxisUnit = yAxisUnit
         this.yAxisList.clear()
         this.yAxisList.addAll(yAxisList.sortedBy { it.value })
-        updateYMaxMin()
-        if(autoZoomYMax &&
-            (yAxisList.size != 3 || (yMin + yMax) != 0f)){
+        updateAmplitude()
+        if (autoAmplitude && (yAxisList.size != 3 || (yMin + yMax) != 0f)) {
             throw IllegalStateException("设置自动缩放Y轴最大最小值时，yAxisList.size必须为3，并且最小值和最大值的绝对值相等！")
         }
     }
 
-    private fun updateYMaxMin(){
+    private fun updateAmplitude() {
         yMin = this.yAxisList.first().value
         yMax = this.yAxisList.last().value
     }
-
 }

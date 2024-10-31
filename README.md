@@ -135,13 +135,13 @@ class LiveLineChartView {
     
     /** 往当前屏幕添加折线点 */
     fun addPoint(point: Float)
-
-    /**
-     * 设置自动缩放Y轴最大最小值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
-     *  @param multipleTime: 绘制一屏幕点的时间倍数
-     *
+    
+	/**
+     * 设置自动缩放Y轴幅值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
+     *  @param timeMultiple: 绘制一屏幕点的时间倍数
+     *  @see screenMaxPoints：一屏幕可绘制点数
      * */
-    fun setAutoZoomInterval(multipleTime: Float)
+    fun setAutoAmplitudeInterval(timeMultiple: Float)
 	
     /** 清空当前屏幕所有的折线点 */
     fun reset()
@@ -158,14 +158,14 @@ class LiveLineChartView {
      * */
     fun setPointSpace(pointSpace: Float)
 
-    /** 设置自动缩放Y轴最大值 */
-    fun setAutoZoomYMax(autoZoomYMax: Boolean)
+     /** 设置是否自动缩放Y轴幅值 */
+    fun setAutoAmplitude(autoAmplitude: Boolean)
 
     /**
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
-     * @param autoZoomYMax 自动缩放Y轴最大值
+     * @param autoZoomYMax 自动缩放Y轴幅值
      *
      * */
     @JvmOverloads
