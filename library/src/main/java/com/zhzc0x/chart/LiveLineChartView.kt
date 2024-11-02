@@ -168,7 +168,6 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
             return
         }
         yAxisList.forEach { axisInfo ->
-            Timber.d("drawYAxis: $axisInfo")
             if (showYScaleLine) {
                 linePaint.color = yScaleLineColor
                 linePaint.strokeWidth = yScaleLineWidth
@@ -285,6 +284,9 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         // 控制每绘制固定的点数后计算一次幅值
         if (autoPoints >= screenMaxPoints * timeMultiple) {
             autoPoints = 0
+            if (maxPoint == 0f) {
+                return
+            }
             maxPoint = ((maxPoint * 1.2f) * 100).toInt() / 100f // 保留小数点后两位
             yAxisList[0] = AxisInfo(-maxPoint)
             yAxisList[yAxisList.lastIndex] = AxisInfo(maxPoint)
@@ -357,8 +359,8 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         this.yAxisList.clear()
         this.yAxisList.addAll(yAxisList.sortedBy { it.value })
         updateAmplitude()
-        if (autoAmplitude && (yAxisList.size != 3 || (yMin + yMax) != 0f)) {
-            throw IllegalStateException("设置自动缩放Y轴最大最小值时，yAxisList.size必须为3，并且最小值和最大值的绝对值相等！")
+        if (autoAmplitude && (yAxisList.size < 2 || (yMin + yMax) != 0f)) {
+            throw IllegalStateException("设置自动缩放Y轴最大最小值时，yAxisList.size必须大于1，并且最小值和最大值的绝对值相等！")
         }
     }
 
