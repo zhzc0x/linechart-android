@@ -184,9 +184,8 @@ class MainActivity : AppCompatActivity() {
             delay(1000)
             while (true) {
                 delay(16)
-                binding.liveLineChartView.addPoint((-9000..9000).random() / 10000f)
+                binding.liveLineChartView.addPoint((-90000..90000).random() / 10000f)
             }
         }
-
     }
 }

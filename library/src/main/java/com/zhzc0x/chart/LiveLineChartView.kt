@@ -278,20 +278,25 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     }
 
     private var timeMultiple = 1f
-    private var maxPoint = 0f
+    private var curMaxPoint = 0f
+    private var preMaxPoint = 0f
     private fun calculateAmplitude(point: Float) {
-        maxPoint = max(maxPoint, abs(point))
+        curMaxPoint = max(curMaxPoint, abs(point))
         // 控制每绘制固定的点数后计算一次幅值
         if (autoPoints >= screenMaxPoints * timeMultiple) {
             autoPoints = 0
-            if (maxPoint == 0f) {
+            if (curMaxPoint == 0f) {
                 return
             }
-            maxPoint = ((maxPoint * 1.2f) * 100).toInt() / 100f // 保留小数点后两位
-            yAxisList[0] = AxisInfo(-maxPoint)
-            yAxisList[yAxisList.lastIndex] = AxisInfo(maxPoint)
-            maxPoint = 0f
-            updateAmplitude()
+//            Timber.d("curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
+            if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * 0.8f) {
+                curMaxPoint = ((curMaxPoint * 1.2f) * 100).toInt() / 100f // 增大20%，保留小数点后两位
+                yAxisList[0] = AxisInfo(-curMaxPoint)
+                yAxisList[yAxisList.lastIndex] = AxisInfo(curMaxPoint)
+                updateAmplitude()
+                preMaxPoint = curMaxPoint
+            }
+            curMaxPoint = 0f
         } else {
             autoPoints++
         }
