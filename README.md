@@ -169,11 +169,16 @@ class LiveLineChartView {
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
-     * @param autoZoomYMax 自动缩放Y轴幅值
+     * @param autoAmplitude 是否自动缩放Y轴幅值
+     * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
-    fun setData(yAxisList: List<AxisInfo>, autoZoomYMax: Boolean = false, yAxisUnit: String = "")
+    fun setData(
+        yAxisList: List<AxisInfo>,
+        autoAmplitude: Boolean = false,
+        textConverter: (Float) -> String = this.textConverter
+    )
     
     ......
 }
@@ -334,7 +339,8 @@ class LiveLineChartView {
         <!-- 绘制曲线 -->
         <attr name="drawCurve" />
 
-        <attr name="limitLineCount" format="integer" />
+        <attr name="xLimitLineCount" format="integer" />
+        <attr name="yLimitLineCount" format="integer" />
         <attr name="pointSpace" format="dimension" />
     </declare-styleable>
 ```
