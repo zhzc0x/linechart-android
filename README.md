@@ -69,7 +69,8 @@ repositories {
         app:lineChartBgColor="#f1f1f1"
         app:lineChartPaddingStart="50dp"
         app:pointSpace="2dp"
-        app:limitLineCount="3"/>
+        app:xLimitLineCount="0"                            
+        app:yLimitLineCount="3" />
 
 ```
 
@@ -160,6 +161,9 @@ class LiveLineChartView {
 
      /** 设置是否自动缩放Y轴幅值 */
     fun setAutoAmplitude(autoAmplitude: Boolean)
+    
+    /** 设置x轴y轴限定线条数 */
+    fun setLimitLineCount(xLimitLineCount: Int, yLimitLineCount: Int)
 
     /**
      * 设置折线数据

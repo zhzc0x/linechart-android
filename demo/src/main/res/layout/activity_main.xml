@@ -134,7 +134,8 @@
             app:lineChartBgColor="#f1f1f1"
             app:lineChartPaddingStart="50dp"
             app:pointSpace="2dp"
-            app:limitLineCount="3"/>
+            app:xLimitLineCount="12"
+            app:yLimitLineCount="7"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -198,6 +199,42 @@
 
             <Spinner
                 android:id="@+id/pointSpaceSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="limitCount  x："/>
+
+            <Spinner
+                android:id="@+id/xLimitCountSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="y："/>
+
+            <Spinner
+                android:id="@+id/yLimitCountSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="textStart"

@@ -13,6 +13,8 @@ import com.zhzc0x.chart.ShowPointInfo
 import com.zhzc0x.chart.demo.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private val pointXInitValueList = listOf(0, 12, 24)
     private var pointXStartDp = 0
     private var pointXEndDp = 0
+    private var autoAmplitude = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,7 +135,11 @@ class MainActivity : AppCompatActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
+
+        var xLimitCount = 0
+        var yLimitCount = 2
         val yAmplitudeRangeList = listOf("0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
+        var curAmplitudeRange = 0f
         binding.yMaxSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
             yAmplitudeRangeList
@@ -143,15 +150,12 @@ class MainActivity : AppCompatActivity() {
                 position: Int, id: Long
             ) {
                 if (position == yAmplitudeRangeList.size - 1) {
+                    autoAmplitude = true
                     binding.liveLineChartView.setAutoAmplitude(true)
                 } else {
-                    val amplitudeRange = yAmplitudeRangeList[position].toFloat()
-                    binding.liveLineChartView.setData(
-                        listOf(
-                            AxisInfo(amplitudeRange),
-                            AxisInfo(0f), AxisInfo(-amplitudeRange)
-                        ), yAxisUnit = "mV"
-                    )
+                    autoAmplitude = false
+                    curAmplitudeRange = yAmplitudeRangeList[position].toFloat()
+                    updateYAxisInfos(curAmplitudeRange, yLimitCount)
                 }
             }
 
@@ -180,6 +184,49 @@ class MainActivity : AppCompatActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
+
+        val xLimitLineCountList = listOf("0", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
+        binding.xLimitCountSpinner.adapter = ArrayAdapter(
+            this, R.layout.item_spinner_textview,
+            xLimitLineCountList
+        )
+        binding.xLimitCountSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View,
+                    position: Int,
+                    id: Long
+                ) {
+                    xLimitCount = xLimitLineCountList[position].toInt()
+                    binding.liveLineChartView.setLimitLineCount(xLimitCount, yLimitCount)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
+
+        val yLimitLineCountList = listOf("3", "4", "5", "6", "7")
+        binding.yLimitCountSpinner.adapter = ArrayAdapter(
+            this, R.layout.item_spinner_textview,
+            yLimitLineCountList
+        )
+        binding.yLimitCountSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View,
+                    position: Int,
+                    id: Long
+                ) {
+                    yLimitCount = yLimitLineCountList[position].toInt()
+                    binding.liveLineChartView.setLimitLineCount(xLimitCount, yLimitCount)
+                    updateYAxisInfos(curAmplitudeRange, yLimitCount)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
         lifecycleScope.launch {
             delay(1000)
             while (true) {
@@ -187,5 +234,16 @@ class MainActivity : AppCompatActivity() {
                 binding.liveLineChartView.addPoint((-90000..90000).random() / 10000f)
             }
         }
+    }
+
+    private fun updateYAxisInfos(amplitudeRange: Float, yLimitCount: Int) {
+        val yAxisList = (0 until yLimitCount).map { i ->
+            AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i).scale(2))
+        }
+        binding.liveLineChartView.setData(yAxisList, autoAmplitude, yAxisUnit = "mV")
+    }
+
+    private fun Float.scale(scale: Int): Float {
+        return BigDecimal(this.toDouble()).setScale(scale, RoundingMode.HALF_UP).toFloat()
     }
 }

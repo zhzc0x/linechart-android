@@ -180,7 +180,8 @@
         <!-- 绘制曲线 -->
         <attr name="drawCurve" />
 
-        <attr name="limitLineCount" format="integer" />
+        <attr name="xLimitLineCount" format="integer" />
+        <attr name="yLimitLineCount" format="integer" />
         <attr name="pointSpace" format="dimension" />
     </declare-styleable>
 
