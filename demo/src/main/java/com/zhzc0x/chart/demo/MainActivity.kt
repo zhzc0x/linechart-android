@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         var xLimitCount = 0
         var yLimitCount = 2
-        val yAmplitudeRangeList = listOf("0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
+        val yAmplitudeRangeList = listOf("100", "0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
         var curAmplitudeRange = 0f
         binding.yMaxSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
@@ -238,12 +238,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateYAxisInfos(amplitudeRange: Float, yLimitCount: Int) {
         val yAxisList = (0 until yLimitCount).map { i ->
-            AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i).scale(2))
+            AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i))
         }
-        binding.liveLineChartView.setData(yAxisList, autoAmplitude, yAxisUnit = "mV")
-    }
-
-    private fun Float.scale(scale: Int): Float {
-        return BigDecimal(this.toDouble()).setScale(scale, RoundingMode.HALF_UP).toFloat()
+        binding.liveLineChartView.setData(yAxisList, autoAmplitude)
     }
 }

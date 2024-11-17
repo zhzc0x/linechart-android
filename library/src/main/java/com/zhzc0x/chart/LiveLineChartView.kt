@@ -55,7 +55,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     private var yMax = 1f
     // y轴坐标对应的数据
     private val yAxisList = ArrayList<AxisInfo>()
-    private var yAxisUnit = ""
+    private var textConverter: (Float) -> String = { it.scale(1).toString() }
     private val lineChartPath = Path()
     private var limitLinePath: Path? = null
     private var yTextHeight = 0f
@@ -193,7 +193,7 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
                     TextAlign.CENTER -> (xOrigin - yScaleLineLength) / 2
                     TextAlign.RIGHT -> xOrigin - yScaleLineLength * 2
                 }
-                canvas.drawText("${axisInfo.showText}$yAxisUnit", textX,
+                canvas.drawText(axisInfo.showText, textX,
                     getDrawY(axisInfo.value) + yTextHeight / 3 - yAxisWidth, textPaint)
             }
         }
@@ -324,14 +324,9 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
 
     private fun updateYAxisList() {
         val valueSpace = curMaxPoint * 2 / (yAxisList.size - 1)
-        val decimalPointIndex = yAxisList.first().showText.indexOf('.')
-        val scale = if (decimalPointIndex >= 0) {
-            yAxisList.first().showText.length - decimalPointIndex
-        } else {
-            0
-        }
         (0 until yAxisList.size).forEach { i ->
-            yAxisList[i] = AxisInfo((curMaxPoint - valueSpace * i).scale(scale))
+            val value = curMaxPoint - valueSpace * i
+            yAxisList[i] = AxisInfo(value, textConverter(value))
         }
     }
 
@@ -403,16 +398,21 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
      *
      * @param yAxisList Y轴数据集合
      * @param autoAmplitude 是否自动缩放Y轴幅值
+     * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
-    fun setData(yAxisList: List<AxisInfo>, autoAmplitude: Boolean = false, yAxisUnit: String = "") {
+    fun setData(
+        yAxisList: List<AxisInfo>,
+        autoAmplitude: Boolean = false,
+        textConverter: (Float) -> String = this.textConverter
+    ) {
         if (yAxisList.size < 2) {
             throw IllegalArgumentException("yAxisList.size must be greater than 1 !")
         }
+        this.textConverter = textConverter
         this.yAxisList.clear()
-        this.yAxisList.addAll(yAxisList)
-        this.yAxisUnit = yAxisUnit
+        this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, textConverter(it.value)) })
         setAutoAmplitude(autoAmplitude)
         updateAmplitude()
         if (yMax <= yMin) {
