@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (position == yAmplitudeRangeList.size - 1) {
                     autoAmplitude = true
-                    binding.liveLineChartView.setAutoAmplitude(true)
+                    binding.liveLineChartView.setAutoAmplitude(true, 0.1f)
                 } else {
                     autoAmplitude = false
                     curAmplitudeRange = yAmplitudeRangeList[position].toFloat()

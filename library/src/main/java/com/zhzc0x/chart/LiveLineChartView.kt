@@ -394,7 +394,7 @@ class LiveLineChartView @JvmOverloads constructor(
      * @param autoAmplitude Boolean
      * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
      * */
-    fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float = 0.1f) {
+    fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float) {
         this.autoAmplitude = autoAmplitude
         this.yMinLimit = yMinLimit
         autoPoints = pointList.size
@@ -419,12 +419,16 @@ class LiveLineChartView @JvmOverloads constructor(
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
+     * @param autoAmplitude 是否自动缩放Y轴幅值
+     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
      * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
     fun setData(
         yAxisList: List<AxisInfo>,
+        autoAmplitude: Boolean = false,
+        yMinLimit: Float = 0.1f,
         textConverter: (Float) -> String = this.textConverter
     ) {
         if (yAxisList.size < 2) {
@@ -434,6 +438,7 @@ class LiveLineChartView @JvmOverloads constructor(
         this.yAxisList.clear()
         this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, this.textConverter(it.value)) })
         updateAmplitude()
+        setAutoAmplitude(autoAmplitude, yMinLimit)
         if (yMax <= yMin) {
             throw IllegalArgumentException("yMax must be greater than yMin! yMax = the first element of yAxisList, yMin = the last element of yAxisList !")
         }
