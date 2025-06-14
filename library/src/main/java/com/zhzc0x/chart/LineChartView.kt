@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -15,11 +16,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.doOnPreDraw
 import com.zhzc0x.chart.ext.dp
 import com.zhzc0x.chart.ext.scale
-import timber.log.Timber
 import kotlin.math.abs
 
-class LineChartView @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
-                                              defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+class LineChartView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet?,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
+
+    private val tag = LineChartView::class.java.simpleName
+    var debug = false
+
     private var showXAxis = true
     private var xAxisColor = Color.GRAY
     private var xAxisWidth = 1f.dp
@@ -254,7 +261,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
             drawWidth = (viewWidth - lineChartPaddingStart).toFloat() - pointXStart - pointXEnd
             minSlideX = maxSlideX
         }
-        Timber.d("slideX=$slideX, minSlideX=$minSlideX, maxSlideX=$maxSlideX")
+        if (debug) {
+            Log.d(tag, "slideX=$slideX, minSlideX=$minSlideX, maxSlideX=$maxSlideX")
+        }
     }
 
     private var viewWidth = 0
@@ -320,7 +329,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 viewWidth.toFloat()
             }
             canvas.drawLine(originX, originY, stopX, originY, linePaint)
-            Timber.d("stopX = $stopX")
+            if (debug) {
+                Log.d(tag,"stopX = $stopX")
+            }
             if (showAxisArrow) {
                 linePaint.color = axisArrowColor
                 if (xAxisArrowPath == null) {
@@ -649,7 +660,9 @@ class LineChartView @JvmOverloads constructor(context: Context, attrs: Attribute
                 if (slideSate == SlideSate.NONE) {
                     distanceX = abs(event.x - downX)
                     distanceY = abs(event.y - downY)
-                    Timber.d("downX=$downX,downY=$downY, distanceX=$distanceX,distanceY=$distanceY")
+                    if (debug) {
+                        Log.d(tag,"downX=$downX,downY=$downY, distanceX=$distanceX,distanceY=$distanceY")
+                    }
                     if (distanceX > 20 && distanceX > distanceY) {
                         startTouchX = event.x
                         slideSate = SlideSate.LEFT_AND_RIGHT

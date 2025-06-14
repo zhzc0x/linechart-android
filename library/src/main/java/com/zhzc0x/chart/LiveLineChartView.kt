@@ -4,15 +4,22 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.zhzc0x.chart.ext.dp
 import com.zhzc0x.chart.ext.scale
-import timber.log.Timber
 import kotlin.math.abs
 import kotlin.math.max
 
-class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: AttributeSet?,
-                                              defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
+class LiveLineChartView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet?,
+    defStyleAttr: Int = 0
+) : View(context, attrs, defStyleAttr) {
+
+    private val tag = LiveLineChartView::class.java.simpleName
+    var debug = false
+
     private var showYAxis = true
     private var yAxisColor = Color.GRAY
     private var yAxisWidth = 1f.dp
@@ -100,7 +107,9 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
         lineChartBgColor = ta.getColor(R.styleable.LiveLineChartView_lineChartBgColor, lineChartBgColor)
         drawCurve = ta.getBoolean(R.styleable.LiveLineChartView_drawCurve, drawCurve)
         pointSpace = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_pointSpace, pointSpace.toInt()).toFloat()
-        Timber.d("pointSpace=$pointSpace")
+        if (debug) {
+            Log.d(tag, "pointSpace=$pointSpace")
+        }
         ta.recycle()
     }
 
@@ -135,8 +144,10 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
 
     private fun updateScreenMaxPoints() {
         screenMaxPoints = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
-        Timber.d("drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
-                "pointSpace=${pointSpace}, screenMaxPoints=$screenMaxPoints")
+        if (debug) {
+            Log.d(tag, "drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
+                    "pointSpace=${pointSpace}, screenMaxPoints=$screenMaxPoints")
+        }
         // 边界case：防止页面未测量完成时出现负数
         if (screenMaxPoints < 0) {
             screenMaxPoints = 0
@@ -310,7 +321,9 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
             if (curMaxPoint == 0f) {
                 return
             }
-            LogUtil.d("curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
+            if (debug) {
+                Log.d(tag, "curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
+            }
             if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * 0.8f) {
                 curMaxPoint *= 1.2f  // 增大20%
                 if (curMaxPoint < yMinLimit) {
@@ -429,6 +442,8 @@ class LiveLineChartView @JvmOverloads constructor(context: Context, attrs: Attri
     private fun updateAmplitude() {
         yMax = this.yAxisList.first().value
         yMin = this.yAxisList.last().value
-        Timber.d("updateAmplitude：yMax=$yMax, yMin=$yMin")
+        if (debug) {
+            Log.d(tag, "updateAmplitude：yMax=$yMax, yMin=$yMin")
+        }
     }
 }
