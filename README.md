@@ -159,8 +159,12 @@ class LiveLineChartView {
      * */
     fun setPointSpace(pointSpace: Float)
 
-     /** 设置是否自动缩放Y轴幅值 */
-    fun setAutoAmplitude(autoAmplitude: Boolean)
+    /**
+     * 设置是否自动缩放Y轴幅值
+     * @param autoAmplitude Boolean
+     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
+     * */
+    fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float)
     
     /** 设置x轴y轴限定线条数 */
     fun setLimitLineCount(xLimitLineCount: Int, yLimitLineCount: Int)
@@ -170,6 +174,7 @@ class LiveLineChartView {
      *
      * @param yAxisList Y轴数据集合
      * @param autoAmplitude 是否自动缩放Y轴幅值
+     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
      * @param textConverter 文本转换
      *
      * */
@@ -177,6 +182,7 @@ class LiveLineChartView {
     fun setData(
         yAxisList: List<AxisInfo>,
         autoAmplitude: Boolean = false,
+        yMinLimit: Float = 0.1f,
         textConverter: (Float) -> String = this.textConverter
     )
     
