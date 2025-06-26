@@ -10,6 +10,8 @@ import com.zhzc0x.chart.ext.dp
 import com.zhzc0x.chart.ext.scale
 import kotlin.math.abs
 import kotlin.math.max
+import androidx.core.content.withStyledAttributes
+import kotlin.math.min
 
 class LiveLineChartView @JvmOverloads constructor(
     context: Context,
@@ -69,7 +71,9 @@ class LiveLineChartView @JvmOverloads constructor(
     private var yTextHeight = 0f
     private var autoAmplitude = false // 自动缩放Y轴幅值
     private var screenMaxPoints = 0 // 屏幕最大点数
-    private var autoPointsThreshold = 0 // 自动缩放Y轴幅值点数阈值
+    private var autoAmplitudePoints = 0 // 自动缩放Y轴幅值点数
+    private var autoAmplitudeFactor = 0.2f // 自动缩放阀值因子
+    private var amplitudeMode = AmplitudeMode.MAX_NEGATE // 幅值计算模式，开启自动幅值生效
 
     init {
         if (attrs != null) {
@@ -79,38 +83,74 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     private fun initCustomAttrs(context: Context, attrs: AttributeSet) {
-        val ta = context.obtainStyledAttributes(attrs, R.styleable.LiveLineChartView)
-        showYAxis = ta.getBoolean(R.styleable.LiveLineChartView_showYAxis, showYAxis)
-        yAxisColor = ta.getColor(R.styleable.LiveLineChartView_yAxisColor, yAxisColor)
-        yAxisWidth = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_yAxisWidth, yAxisWidth.toInt()).toFloat()
-        showYText = ta.getBoolean(R.styleable.LiveLineChartView_showYText, showYText)
-        yTextColor = ta.getColor(R.styleable.LiveLineChartView_yTextColor, yAxisColor)
-        yTextSize = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_yTextSize, yTextSize.toInt()).toFloat()
-        val ordinal = ta.getInt(R.styleable.LiveLineChartView_yTextAlign, yTextAlign.ordinal)
-        yTextAlign = TextAlign.values()[ordinal]
-        showYScaleLine = ta.getBoolean(R.styleable.LiveLineChartView_showYScaleLine, showYScaleLine)
-        yScaleLineColor = ta.getColor(R.styleable.LiveLineChartView_yScaleLineColor, yAxisColor)
-        yScaleLineWidth = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_yScaleLineWidth, yScaleLineWidth.toInt()).toFloat()
-        yScaleLineLength = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_yScaleLineLength, yScaleLineLength.toInt()).toFloat()
+        context.withStyledAttributes(attrs, R.styleable.LiveLineChartView) {
+            showYAxis = getBoolean(R.styleable.LiveLineChartView_showYAxis, showYAxis)
+            yAxisColor = getColor(R.styleable.LiveLineChartView_yAxisColor, yAxisColor)
+            yAxisWidth = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_yAxisWidth,
+                yAxisWidth.toInt()
+            ).toFloat()
+            showYText = getBoolean(R.styleable.LiveLineChartView_showYText, showYText)
+            yTextColor = getColor(R.styleable.LiveLineChartView_yTextColor, yAxisColor)
+            yTextSize = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_yTextSize,
+                yTextSize.toInt()
+            ).toFloat()
+            val ordinal = getInt(R.styleable.LiveLineChartView_yTextAlign, yTextAlign.ordinal)
+            yTextAlign = TextAlign.values()[ordinal]
+            showYScaleLine =
+                getBoolean(R.styleable.LiveLineChartView_showYScaleLine, showYScaleLine)
+            yScaleLineColor = getColor(R.styleable.LiveLineChartView_yScaleLineColor, yAxisColor)
+            yScaleLineWidth = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_yScaleLineWidth,
+                yScaleLineWidth.toInt()
+            ).toFloat()
+            yScaleLineLength = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_yScaleLineLength,
+                yScaleLineLength.toInt()
+            ).toFloat()
 
-        limitLineColor = ta.getColor(R.styleable.LiveLineChartView_limitLineColor, limitLineColor)
-        limitLineWidth = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_limitLineWidth, limitLineWidth.toInt()).toFloat()
-        limitLineLength = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_limitLineLength, limitLineLength.toInt()).toFloat()
-        limitLineSpace = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_limitLineSpace, limitLineSpace.toInt()).toFloat()
-        val xLimitLineCount = ta.getInt(R.styleable.LiveLineChartView_xLimitLineCount, xLimitLineCount)
-        val yLimitLineCount = ta.getInt(R.styleable.LiveLineChartView_yLimitLineCount, yLimitLineCount)
-        setLimitLineCount(xLimitLineCount, yLimitLineCount)
+            limitLineColor = getColor(R.styleable.LiveLineChartView_limitLineColor, limitLineColor)
+            limitLineWidth = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_limitLineWidth,
+                limitLineWidth.toInt()
+            ).toFloat()
+            limitLineLength = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_limitLineLength,
+                limitLineLength.toInt()
+            ).toFloat()
+            limitLineSpace = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_limitLineSpace,
+                limitLineSpace.toInt()
+            ).toFloat()
+            val xLimitLineCount =
+                getInt(R.styleable.LiveLineChartView_xLimitLineCount, xLimitLineCount)
+            val yLimitLineCount =
+                getInt(R.styleable.LiveLineChartView_yLimitLineCount, yLimitLineCount)
+            setLimitLineCount(xLimitLineCount, yLimitLineCount)
 
-        lineChartColor = ta.getColor(R.styleable.LiveLineChartView_lineChartColor, lineChartColor)
-        lineChartWidth = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_lineChartWidth, lineChartWidth.toInt()).toFloat()
-        lineChartPaddingStart = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_lineChartPaddingStart, lineChartPaddingStart)
-        lineChartBgColor = ta.getColor(R.styleable.LiveLineChartView_lineChartBgColor, lineChartBgColor)
-        drawCurve = ta.getBoolean(R.styleable.LiveLineChartView_drawCurve, drawCurve)
-        pointSpace = ta.getDimensionPixelSize(R.styleable.LiveLineChartView_pointSpace, pointSpace.toInt()).toFloat()
-        if (debug) {
-            Log.d(tag, "pointSpace=$pointSpace")
+            lineChartColor = getColor(R.styleable.LiveLineChartView_lineChartColor, lineChartColor)
+            lineChartWidth = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_lineChartWidth,
+                lineChartWidth.toInt()
+            ).toFloat()
+            lineChartPaddingStart = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_lineChartPaddingStart,
+                lineChartPaddingStart
+            )
+            lineChartBgColor =
+                getColor(R.styleable.LiveLineChartView_lineChartBgColor, lineChartBgColor)
+            drawCurve = getBoolean(R.styleable.LiveLineChartView_drawCurve, drawCurve)
+            pointSpace = getDimensionPixelSize(
+                R.styleable.LiveLineChartView_pointSpace,
+                pointSpace.toInt()
+            ).toFloat()
+            val amplitudeModeOrdinal = getInt(R.styleable.LiveLineChartView_amplitudeMode, amplitudeMode.ordinal)
+            amplitudeMode = AmplitudeMode.values()[amplitudeModeOrdinal]
+            if (debug) {
+                Log.d(tag, "pointSpace=$pointSpace")
+            }
         }
-        ta.recycle()
     }
 
     private fun initPaint() {
@@ -152,7 +192,7 @@ class LiveLineChartView @JvmOverloads constructor(
         if (screenMaxPoints < 0) {
             screenMaxPoints = 0
         }
-        autoPointsThreshold = screenMaxPoints
+        autoAmplitudePoints = screenMaxPoints
     }
 
     private var viewWidth = 0
@@ -311,21 +351,29 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     private var curMaxPoint = 0f
+    private var curMinPoint = 0f
     private var preMaxPoint = 0f
-    private var autoPoints = 0
+    private var preMinPoint = 0f
+    private var updatePoints = 0
     private fun calculateAmplitude(point: Float) {
-        curMaxPoint = max(curMaxPoint, abs(point))
+        if (amplitudeMode == AmplitudeMode.MAX_NEGATE) {
+            curMaxPoint = max(curMaxPoint, abs(point))
+            curMinPoint = -curMaxPoint
+        } else {
+            curMaxPoint = max(curMaxPoint, point)
+            curMinPoint = min(curMinPoint, point)
+        }
         // 控制每绘制固定的点数后计算一次幅值
-        if (autoPoints >= autoPointsThreshold) {
-            autoPoints = 0
+        if (updatePoints >= autoAmplitudePoints) {
+            updatePoints = 0
             if (curMaxPoint == 0f) {
                 return
             }
             if (debug) {
                 Log.d(tag, "curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
             }
-            if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * 0.8f) {
-                curMaxPoint *= 1.2f  // 增大20%
+            if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
+                curMaxPoint *= (1 + autoAmplitudeFactor)
                 if (curMaxPoint < yMinLimit) {
                     curMaxPoint = yMinLimit
                 }
@@ -334,26 +382,32 @@ class LiveLineChartView @JvmOverloads constructor(
                 preMaxPoint = curMaxPoint
             }
             curMaxPoint = 0f
+            if (amplitudeMode == AmplitudeMode.MAX_NEGATE) {
+                return
+            }
+            // -1 -1.4 || -1 -1.4 * 0.8 = -1.12
+            if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 - autoAmplitudeFactor)) {
+                curMinPoint *= (1 + autoAmplitudeFactor)
+                if (curMinPoint < -yMinLimit) {
+                    curMaxPoint = -yMinLimit
+                }
+                updateYAxisList()
+                updateAmplitude()
+                preMinPoint = curMinPoint
+            }
+            curMinPoint = 0f
         } else {
-            autoPoints++
+            updatePoints++
         }
     }
 
     private fun updateYAxisList() {
-        val valueSpace = curMaxPoint * 2 / (yAxisList.size - 1)
+        val amplitude = curMaxPoint - curMinPoint
+        val valueSpace = amplitude / (yAxisList.size - 1)
         (0 until yAxisList.size).forEach { i ->
-            val value = curMaxPoint - valueSpace * i
+            val value = amplitude - valueSpace * i
             yAxisList[i] = AxisInfo(value, textConverter(value))
         }
-    }
-
-    /**
-     * 设置自动缩放Y轴幅值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
-     *  @param timeMultiple: 绘制一屏幕点的时间倍数
-     *  @see screenMaxPoints
-     * */
-    fun setAutoAmplitudeInterval(timeMultiple: Float) {
-        autoPointsThreshold = (screenMaxPoints * timeMultiple).toInt()
     }
 
     fun reset() {
@@ -397,10 +451,37 @@ class LiveLineChartView @JvmOverloads constructor(
     fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float) {
         this.autoAmplitude = autoAmplitude
         this.yMinLimit = yMinLimit
-        autoPoints = pointList.size
+        updatePoints = pointList.size
         if (autoAmplitude) {
             preMaxPoint = 0f
         }
+    }
+
+    /**
+     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数
+     *  @param screenPointMultiple: 绘制当前屏幕点数的倍数
+     *  @see screenMaxPoints
+     * */
+    fun setAutoAmplitudePoints(screenPointMultiple: Float) {
+        autoAmplitudePoints = (screenMaxPoints * screenPointMultiple).toInt()
+    }
+
+    /**
+     * 设置自动缩放Y轴幅值阀值因子
+     *  @param factor: 控制自动缩放阀值，取值范围（0f until 1f），值越大，缩放阀值越小
+     *  @see screenMaxPoints
+     * */
+    fun setAutoAmplitudeFactor(factor: Float) {
+        require(factor >= 0f && factor < 1f)
+        autoAmplitudeFactor = factor
+    }
+
+    /**
+     * 设置幅值计算模式
+     *  @param amplitudeMode: MAX_NEGATE 最小值=最大值取反，REALTIME 实时计算
+     * */
+    fun setAmplitudeMode(amplitudeMode: AmplitudeMode) {
+        this.amplitudeMode = amplitudeMode
     }
 
     /** 设置x轴y轴限定线条数 */

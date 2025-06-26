@@ -22,3 +22,7 @@ data class ShowPointInfo(
     @ColorInt val textColor: Int,
     val textPadding: Float//px
 )
+
+enum class AmplitudeMode {
+    MAX_NEGATE, REALTIME
+}
