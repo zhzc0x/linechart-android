@@ -136,13 +136,6 @@ class LiveLineChartView {
     
     /** 往当前屏幕添加折线点 */
     fun addPoint(point: Float)
-    
-	/**
-     * 设置自动缩放Y轴幅值间隔，默认绘制一屏幕点的时间，根据addPoint()的频率计算
-     *  @param timeMultiple: 绘制一屏幕点的时间倍数
-     *  @see screenMaxPoints：一屏幕可绘制点数
-     * */
-    fun setAutoAmplitudeInterval(timeMultiple: Float)
 	
     /** 清空当前屏幕所有的折线点 */
     fun reset()
@@ -160,11 +153,30 @@ class LiveLineChartView {
     fun setPointSpace(pointSpace: Float)
 
     /**
-     * 设置是否自动缩放Y轴幅值
-     * @param autoAmplitude Boolean
-     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
+     * 设置幅值计算模式
+     *  @param amplitudeMode: AmplitudeMode
+     *  @see AmplitudeMode
+     *  @param yMinLimit y轴最小值限制, amplitudeMode != AmplitudeMode.FIXED时生效
+     *
      * */
-    fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float)
+    fun setAmplitudeMode(amplitudeMode: AmplitudeMode, yMinLimit: Float = 0.1f)
+
+    /**
+     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数，amplitudeMode != AmplitudeMode.FIXED时生效
+     *  @param screenPointMultiple: 绘制当前屏幕点数的倍数
+     *  @see screenMaxPoints
+     * */
+    fun setAutoAmplitudePoints(screenPointMultiple: Float)
+
+    /**
+     * 设置自动缩放Y轴幅值阀值因子，amplitudeMode != AmplitudeMode.FIXED时生效
+     *  @param factor: 控制自动缩放阀值，取值范围（0f until 1f），值越大，缩放阀值越小
+     *  @see screenMaxPoints
+     * */
+    fun setAutoAmplitudeFactor(factor: Float) {
+        require(factor >= 0f && factor < 1f)
+        autoAmplitudeFactor = factor
+    }
     
     /** 设置x轴y轴限定线条数 */
     fun setLimitLineCount(xLimitLineCount: Int, yLimitLineCount: Int)
@@ -173,16 +185,12 @@ class LiveLineChartView {
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
-     * @param autoAmplitude 是否自动缩放Y轴幅值
-     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
      * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
     fun setData(
         yAxisList: List<AxisInfo>,
-        autoAmplitude: Boolean = false,
-        yMinLimit: Float = 0.1f,
         textConverter: (Float) -> String = this.textConverter
     )
     
@@ -348,6 +356,15 @@ class LiveLineChartView {
         <attr name="xLimitLineCount" format="integer" />
         <attr name="yLimitLineCount" format="integer" />
         <attr name="pointSpace" format="dimension" />
+        <!-- 幅值计算模式 -->
+        <attr name="amplitudeMode" format="enum" >
+            <!-- 固定模式 -->
+            <enum name="fixed" value="0" />
+            <!-- 自动模式：实时计算最大幅值，最小幅值=最大幅值取反 -->
+            <enum name="maxNegate" value="1" />
+            <!-- 自动模式：实时计算最大、最小幅值 -->
+            <enum name="realtime" value="2" />
+        </attr>
     </declare-styleable>
 ```
 
