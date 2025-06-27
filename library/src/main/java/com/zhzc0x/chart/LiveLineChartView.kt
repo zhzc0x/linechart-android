@@ -20,7 +20,6 @@ class LiveLineChartView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val tag = LiveLineChartView::class.java.simpleName
-    var debug = false
 
     private var showYAxis = true
     private var yAxisColor = Color.GRAY
@@ -69,11 +68,10 @@ class LiveLineChartView @JvmOverloads constructor(
     private val lineChartPath = Path()
     private var limitLinePath: Path? = null
     private var yTextHeight = 0f
-    private var autoAmplitude = false // 自动缩放Y轴幅值
     private var screenMaxPoints = 0 // 屏幕最大点数
     private var autoAmplitudePoints = 0 // 自动缩放Y轴幅值点数
-    private var autoAmplitudeFactor = 0.2f // 自动缩放阀值因子
-    private var amplitudeMode = AmplitudeMode.MAX_NEGATE // 幅值计算模式，开启自动幅值生效
+    private var autoAmplitudeFactor = 0.1f // 自动缩放阀值因子
+    private var amplitudeMode = AmplitudeMode.FIXED // 幅值计算模式
 
     init {
         if (attrs != null) {
@@ -147,7 +145,7 @@ class LiveLineChartView @JvmOverloads constructor(
             ).toFloat()
             val amplitudeModeOrdinal = getInt(R.styleable.LiveLineChartView_amplitudeMode, amplitudeMode.ordinal)
             amplitudeMode = AmplitudeMode.values()[amplitudeModeOrdinal]
-            if (debug) {
+            if (debugLineChart) {
                 Log.d(tag, "pointSpace=$pointSpace")
             }
         }
@@ -184,7 +182,7 @@ class LiveLineChartView @JvmOverloads constructor(
 
     private fun updateScreenMaxPoints() {
         screenMaxPoints = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
-        if (debug) {
+        if (debugLineChart) {
             Log.d(tag, "drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
                     "pointSpace=${pointSpace}, screenMaxPoints=$screenMaxPoints")
         }
@@ -344,7 +342,7 @@ class LiveLineChartView @JvmOverloads constructor(
             pointList.removeAt(0)
         }
         pointList.add(point)
-        if (autoAmplitude) {
+        if (amplitudeMode != AmplitudeMode.FIXED) {
             calculateAmplitude(point)
         }
         invalidate()
@@ -356,57 +354,60 @@ class LiveLineChartView @JvmOverloads constructor(
     private var preMinPoint = 0f
     private var updatePoints = 0
     private fun calculateAmplitude(point: Float) {
-        if (amplitudeMode == AmplitudeMode.MAX_NEGATE) {
-            curMaxPoint = max(curMaxPoint, abs(point))
-            curMinPoint = -curMaxPoint
-        } else {
-            curMaxPoint = max(curMaxPoint, point)
-            curMinPoint = min(curMinPoint, point)
-        }
+        mathMaxMinPoint(point)
         // 控制每绘制固定的点数后计算一次幅值
         if (updatePoints >= autoAmplitudePoints) {
             updatePoints = 0
-            if (curMaxPoint == 0f) {
+            if (curMaxPoint == 0f && curMinPoint == 0f) {
                 return
             }
-            if (debug) {
-                Log.d(tag, "curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
+            if (debugLineChart) {
+                Log.d(tag, "curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint \n " +
+                        "curMinPoint=$curMinPoint, preMinPoint=$preMinPoint")
             }
             if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
                 curMaxPoint *= (1 + autoAmplitudeFactor)
                 if (curMaxPoint < yMinLimit) {
                     curMaxPoint = yMinLimit
                 }
-                updateYAxisList()
-                updateAmplitude()
-                preMaxPoint = curMaxPoint
             }
-            curMaxPoint = 0f
-            if (amplitudeMode == AmplitudeMode.MAX_NEGATE) {
-                return
-            }
-            // -1 -1.4 || -1 -1.4 * 0.8 = -1.12
-            if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 - autoAmplitudeFactor)) {
-                curMinPoint *= (1 + autoAmplitudeFactor)
-                if (curMinPoint < -yMinLimit) {
-                    curMaxPoint = -yMinLimit
+            if (amplitudeMode == AmplitudeMode.MAX_MIN) {
+                // -1 -1.4 || -1 -1.4 * 0.8 = -1.12
+                if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 - autoAmplitudeFactor)) {
+                    curMinPoint *= (1 + autoAmplitudeFactor)
                 }
-                updateYAxisList()
-                updateAmplitude()
-                preMinPoint = curMinPoint
+            } else {
+                curMinPoint = -curMaxPoint
             }
+            updateYAxisList()
+            updateAmplitude()
+            preMaxPoint = curMaxPoint
+            preMinPoint = curMinPoint
+            curMaxPoint = 0f
             curMinPoint = 0f
         } else {
             updatePoints++
         }
     }
 
+    private fun mathMaxMinPoint(point: Float) {
+        if (amplitudeMode == AmplitudeMode.MAX_NEGATE) {
+            curMaxPoint = max(curMaxPoint, abs(point))
+            curMinPoint = -curMaxPoint
+        } else if (amplitudeMode == AmplitudeMode.MAX_MIN) {
+            curMaxPoint = max(curMaxPoint, point)
+            curMinPoint = min(curMinPoint, point)
+        }
+    }
+
     private fun updateYAxisList() {
-        val amplitude = curMaxPoint - curMinPoint
-        val valueSpace = amplitude / (yAxisList.size - 1)
+        val valueSpace = (curMaxPoint - curMinPoint) / (yAxisList.size - 1)
         (0 until yAxisList.size).forEach { i ->
-            val value = amplitude - valueSpace * i
+            val value = curMaxPoint - valueSpace * i
             yAxisList[i] = AxisInfo(value, textConverter(value))
+        }
+        if (debugLineChart) {
+            Log.d(tag, "updateYAxisList: curMaxPoint=$curMaxPoint, curMinPoint=$curMinPoint")
         }
     }
 
@@ -444,21 +445,25 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     /**
-     * 设置是否自动缩放Y轴幅值
-     * @param autoAmplitude Boolean
-     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
+     * 设置幅值计算模式
+     *  @param amplitudeMode: AmplitudeMode
+     *  @see AmplitudeMode
+     *  @param yMinLimit y轴最小值限制, amplitudeMode != AmplitudeMode.FIXED时生效
+     *
      * */
-    fun setAutoAmplitude(autoAmplitude: Boolean, yMinLimit: Float) {
-        this.autoAmplitude = autoAmplitude
-        this.yMinLimit = yMinLimit
+    fun setAmplitudeMode(amplitudeMode: AmplitudeMode, yMinLimit: Float = 0.1f) {
+        this.amplitudeMode = amplitudeMode
         updatePoints = pointList.size
-        if (autoAmplitude) {
+        if (amplitudeMode != AmplitudeMode.FIXED) {
             preMaxPoint = 0f
+            preMinPoint = 0f
+        } else {
+            this.yMinLimit = yMinLimit
         }
     }
 
     /**
-     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数
+     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数，amplitudeMode != AmplitudeMode.FIXED时生效
      *  @param screenPointMultiple: 绘制当前屏幕点数的倍数
      *  @see screenMaxPoints
      * */
@@ -467,21 +472,13 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     /**
-     * 设置自动缩放Y轴幅值阀值因子
+     * 设置自动缩放Y轴幅值阀值因子，amplitudeMode != AmplitudeMode.FIXED时生效
      *  @param factor: 控制自动缩放阀值，取值范围（0f until 1f），值越大，缩放阀值越小
      *  @see screenMaxPoints
      * */
     fun setAutoAmplitudeFactor(factor: Float) {
         require(factor >= 0f && factor < 1f)
         autoAmplitudeFactor = factor
-    }
-
-    /**
-     * 设置幅值计算模式
-     *  @param amplitudeMode: MAX_NEGATE 最小值=最大值取反，REALTIME 实时计算
-     * */
-    fun setAmplitudeMode(amplitudeMode: AmplitudeMode) {
-        this.amplitudeMode = amplitudeMode
     }
 
     /** 设置x轴y轴限定线条数 */
@@ -500,16 +497,12 @@ class LiveLineChartView @JvmOverloads constructor(
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
-     * @param autoAmplitude 是否自动缩放Y轴幅值
-     * @param yMinLimit y轴最小值限制, autoAmplitude=true时生效
      * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
     fun setData(
         yAxisList: List<AxisInfo>,
-        autoAmplitude: Boolean = false,
-        yMinLimit: Float = 0.1f,
         textConverter: (Float) -> String = this.textConverter
     ) {
         if (yAxisList.size < 2) {
@@ -519,7 +512,6 @@ class LiveLineChartView @JvmOverloads constructor(
         this.yAxisList.clear()
         this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, this.textConverter(it.value)) })
         updateAmplitude()
-        setAutoAmplitude(autoAmplitude, yMinLimit)
         if (yMax <= yMin) {
             throw IllegalArgumentException("yMax must be greater than yMin! yMax = the first element of yAxisList, yMin = the last element of yAxisList !")
         }
@@ -528,7 +520,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private fun updateAmplitude() {
         yMax = this.yAxisList.first().value
         yMin = this.yAxisList.last().value
-        if (debug) {
+        if (debugLineChart) {
             Log.d(tag, "updateAmplitude：yMax=$yMax, yMin=$yMin")
         }
     }

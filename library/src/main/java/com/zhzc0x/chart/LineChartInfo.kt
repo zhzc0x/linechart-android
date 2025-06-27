@@ -2,6 +2,14 @@ package com.zhzc0x.chart
 
 import androidx.annotation.ColorInt
 
+var debugLineChart = true
+
+enum class AmplitudeMode {
+    FIXED, // 固定模式
+    MAX_NEGATE, // 自动模式：实时计算最大幅值，最小幅值=最大幅值取反
+    MAX_MIN    // 自动模式：实时计算最大、最小幅值
+}
+
 internal enum class TextAlign {
     LEFT, CENTER, RIGHT
 }
@@ -23,6 +31,3 @@ data class ShowPointInfo(
     val textPadding: Float//px
 )
 
-enum class AmplitudeMode {
-    MAX_NEGATE, REALTIME
-}

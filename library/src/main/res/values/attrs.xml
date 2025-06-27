@@ -184,12 +184,14 @@
         <attr name="yLimitLineCount" format="integer" />
         <attr name="pointSpace" format="dimension" />
 
-        <!-- 幅值计算模式，开启自动幅值生效 -->
+        <!-- 幅值计算模式 -->
         <attr name="amplitudeMode" format="enum" >
-            <!-- 最大值取反 -->
-            <enum name="maxNegate" value="0" />
-            <!-- 实时计算 -->
-            <enum name="realtime" value="1" />
+            <!-- 固定模式 -->
+            <enum name="fixed" value="0" />
+            <!-- 自动模式：实时计算最大幅值，最小幅值=最大幅值取反 -->
+            <enum name="maxNegate" value="1" />
+            <!-- 自动模式：实时计算最大、最小幅值 -->
+            <enum name="realtime" value="2" />
         </attr>
     </declare-styleable>
 

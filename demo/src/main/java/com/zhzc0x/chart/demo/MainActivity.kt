@@ -7,14 +7,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.lifecycleScope
+import com.zhzc0x.chart.AmplitudeMode
 import com.zhzc0x.chart.AxisInfo
 import com.zhzc0x.chart.PointInfo
 import com.zhzc0x.chart.ShowPointInfo
 import com.zhzc0x.chart.demo.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.RoundingMode
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,7 +21,6 @@ class MainActivity : AppCompatActivity() {
     private val pointXInitValueList = listOf(0, 12, 24)
     private var pointXStartDp = 0
     private var pointXEndDp = 0
-    private var autoAmplitude = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         var xLimitCount = 0
         var yLimitCount = 2
-        val yAmplitudeRangeList = listOf("100", "0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动")
+        val yAmplitudeRangeList = listOf("100", "0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动-MAX_NEGATE", "自动-MAX_MIN")
         var curAmplitudeRange = 0f
         binding.yMaxSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
@@ -150,10 +148,11 @@ class MainActivity : AppCompatActivity() {
                 position: Int, id: Long
             ) {
                 if (position == yAmplitudeRangeList.size - 1) {
-                    autoAmplitude = true
-                    binding.liveLineChartView.setAutoAmplitude(true, 0.1f)
+                    binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.MAX_MIN)
+                } else if (position == yAmplitudeRangeList.size - 2) {
+                    binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.MAX_NEGATE)
                 } else {
-                    autoAmplitude = false
+                    binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.FIXED)
                     curAmplitudeRange = yAmplitudeRangeList[position].toFloat()
                     updateYAxisInfos(curAmplitudeRange, yLimitCount)
                 }
@@ -240,6 +239,6 @@ class MainActivity : AppCompatActivity() {
         val yAxisList = (0 until yLimitCount).map { i ->
             AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i))
         }
-        binding.liveLineChartView.setData(yAxisList, autoAmplitude)
+        binding.liveLineChartView.setData(yAxisList)
     }
 }

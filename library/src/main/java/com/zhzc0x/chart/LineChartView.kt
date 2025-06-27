@@ -25,7 +25,6 @@ class LineChartView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val tag = LineChartView::class.java.simpleName
-    var debug = false
 
     private var showXAxis = true
     private var xAxisColor = Color.GRAY
@@ -261,7 +260,7 @@ class LineChartView @JvmOverloads constructor(
             drawWidth = (viewWidth - lineChartPaddingStart).toFloat() - pointXStart - pointXEnd
             minSlideX = maxSlideX
         }
-        if (debug) {
+        if (debugLineChart) {
             Log.d(tag, "slideX=$slideX, minSlideX=$minSlideX, maxSlideX=$maxSlideX")
         }
     }
@@ -329,7 +328,7 @@ class LineChartView @JvmOverloads constructor(
                 viewWidth.toFloat()
             }
             canvas.drawLine(originX, originY, stopX, originY, linePaint)
-            if (debug) {
+            if (debugLineChart) {
                 Log.d(tag,"stopX = $stopX")
             }
             if (showAxisArrow) {
@@ -660,7 +659,7 @@ class LineChartView @JvmOverloads constructor(
                 if (slideSate == SlideSate.NONE) {
                     distanceX = abs(event.x - downX)
                     distanceY = abs(event.y - downY)
-                    if (debug) {
+                    if (debugLineChart) {
                         Log.d(tag,"downX=$downX,downY=$downY, distanceX=$distanceX,distanceY=$distanceY")
                     }
                     if (distanceX > 20 && distanceX > distanceY) {
