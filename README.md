@@ -156,10 +156,9 @@ class LiveLineChartView {
      * 设置幅值计算模式
      *  @param amplitudeMode: AmplitudeMode
      *  @see AmplitudeMode
-     *  @param yMinLimit y轴最小值限制, amplitudeMode != AmplitudeMode.FIXED时生效
      *
      * */
-    fun setAmplitudeMode(amplitudeMode: AmplitudeMode, yMinLimit: Float = 0.1f)
+    fun setAmplitudeMode(amplitudeMode: AmplitudeMode)
 
     /**
      * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数，amplitudeMode != AmplitudeMode.FIXED时生效
@@ -185,12 +184,15 @@ class LiveLineChartView {
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
+     * @param amplitudeMode 幅值计算模式，默认AmplitudeMode.FIXED
+     * @see AmplitudeMode
      * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
     fun setData(
         yAxisList: List<AxisInfo>,
+        amplitudeMode: AmplitudeMode = AmplitudeMode.FIXED,
         textConverter: (Float) -> String = this.textConverter
     )
     

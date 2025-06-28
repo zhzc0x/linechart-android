@@ -178,11 +178,13 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     val pointSpace = pointSpaceList[position].replace("dp", "").toFloat()
                     binding.liveLineChartView.setPointSpace(pointSpace)
+                    binding.liveLineChartView.setAutoAmplitudePoints(0.5f)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
+        binding.pointSpaceSpinner.setSelection(pointSpaceList.lastIndex)
 
         val xLimitLineCountList = listOf("0", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
         binding.xLimitCountSpinner.adapter = ArrayAdapter(
@@ -230,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             delay(1000)
             while (true) {
                 delay(16)
-                binding.liveLineChartView.addPoint((-90000..90000).random() / 10000f)
+                binding.liveLineChartView.addPoint((-900000..900000).random() / 10000f)
             }
         }
     }

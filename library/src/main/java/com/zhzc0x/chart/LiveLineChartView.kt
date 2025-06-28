@@ -61,7 +61,6 @@ class LiveLineChartView @JvmOverloads constructor(
     private var drawHeight = 0f
     private var yMin = 0f
     private var yMax = 1f
-    private var yMinLimit = 0f // y轴最小值限制
     // y轴坐标对应的数据
     private val yAxisList = ArrayList<AxisInfo>()
     private var textConverter: (Float) -> String = { it.scale(1).toString() }
@@ -354,37 +353,24 @@ class LiveLineChartView @JvmOverloads constructor(
     private var preMinPoint = 0f
     private var updatePoints = 0
     private fun calculateAmplitude(point: Float) {
-        mathMaxMinPoint(point)
+        if (updatePoints == 0) {
+            curMaxPoint = point
+            curMinPoint = point
+        } else {
+            mathMaxMinPoint(point)
+        }
         // 控制每绘制固定的点数后计算一次幅值
         if (updatePoints >= autoAmplitudePoints) {
             updatePoints = 0
             if (curMaxPoint == 0f && curMinPoint == 0f) {
                 return
             }
-            if (debugLineChart) {
-                Log.d(tag, "curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint \n " +
-                        "curMinPoint=$curMinPoint, preMinPoint=$preMinPoint")
-            }
-            if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
-                curMaxPoint *= (1 + autoAmplitudeFactor)
-                if (curMaxPoint < yMinLimit) {
-                    curMaxPoint = yMinLimit
-                }
-            }
-            if (amplitudeMode == AmplitudeMode.MAX_MIN) {
-                // -1 -1.4 || -1 -1.4 * 0.8 = -1.12
-                if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 - autoAmplitudeFactor)) {
-                    curMinPoint *= (1 + autoAmplitudeFactor)
-                }
-            } else {
-                curMinPoint = -curMaxPoint
-            }
+            updateMaxPoint()
+            updateMinPoint()
             updateYAxisList()
             updateAmplitude()
             preMaxPoint = curMaxPoint
             preMinPoint = curMinPoint
-            curMaxPoint = 0f
-            curMinPoint = 0f
         } else {
             updatePoints++
         }
@@ -397,6 +383,28 @@ class LiveLineChartView @JvmOverloads constructor(
         } else if (amplitudeMode == AmplitudeMode.MAX_MIN) {
             curMaxPoint = max(curMaxPoint, point)
             curMinPoint = min(curMinPoint, point)
+        }
+    }
+
+    private fun updateMaxPoint() {
+        if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
+            curMaxPoint *= (1 + autoAmplitudeFactor)
+        }
+        if (debugLineChart) {
+            Log.d(tag, "updateMaxPoint: curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
+        }
+    }
+
+    private fun updateMinPoint() {
+        if (amplitudeMode == AmplitudeMode.MAX_MIN) {
+            if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 + autoAmplitudeFactor)) {
+                curMinPoint *= (1 - autoAmplitudeFactor)
+            }
+        } else {
+            curMinPoint = -curMaxPoint
+        }
+        if (debugLineChart) {
+            Log.d(tag, "updateMinPoint: curMinPoint=$curMinPoint, preMinPoint=$preMinPoint")
         }
     }
 
@@ -448,17 +456,14 @@ class LiveLineChartView @JvmOverloads constructor(
      * 设置幅值计算模式
      *  @param amplitudeMode: AmplitudeMode
      *  @see AmplitudeMode
-     *  @param yMinLimit y轴最小值限制, amplitudeMode != AmplitudeMode.FIXED时生效
      *
      * */
-    fun setAmplitudeMode(amplitudeMode: AmplitudeMode, yMinLimit: Float = 0.1f) {
+    fun setAmplitudeMode(amplitudeMode: AmplitudeMode) {
         this.amplitudeMode = amplitudeMode
         updatePoints = pointList.size
         if (amplitudeMode != AmplitudeMode.FIXED) {
             preMaxPoint = 0f
             preMinPoint = 0f
-        } else {
-            this.yMinLimit = yMinLimit
         }
     }
 
@@ -497,24 +502,28 @@ class LiveLineChartView @JvmOverloads constructor(
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
+     * @param amplitudeMode 幅值计算模式，默认AmplitudeMode.FIXED
+     * @see AmplitudeMode
      * @param textConverter 文本转换
      *
      * */
     @JvmOverloads
     fun setData(
         yAxisList: List<AxisInfo>,
+        amplitudeMode: AmplitudeMode = AmplitudeMode.FIXED,
         textConverter: (Float) -> String = this.textConverter
     ) {
         if (yAxisList.size < 2) {
             throw IllegalArgumentException("yAxisList.size must be greater than 1 !")
         }
-        this.textConverter = textConverter
         this.yAxisList.clear()
         this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, this.textConverter(it.value)) })
+        this.textConverter = textConverter
         updateAmplitude()
         if (yMax <= yMin) {
             throw IllegalArgumentException("yMax must be greater than yMin! yMax = the first element of yAxisList, yMin = the last element of yAxisList !")
         }
+        setAmplitudeMode(amplitudeMode)
     }
 
     private fun updateAmplitude() {
