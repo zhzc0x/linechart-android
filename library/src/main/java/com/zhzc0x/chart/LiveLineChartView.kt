@@ -361,16 +361,15 @@ class LiveLineChartView @JvmOverloads constructor(
         }
         // 控制每绘制固定的点数后计算一次幅值
         if (updatePoints >= autoAmplitudePoints) {
-            updatePoints = 0
-            if (curMaxPoint == 0f && curMinPoint == 0f) {
-                return
-            }
             updateMaxPoint()
             updateMinPoint()
+            // 减少不必要的更新
+            if (curMaxPoint == curMinPoint || curMaxPoint == yMax || curMinPoint == yMin) {
+                return
+            }
             updateYAxisList()
             updateAmplitude()
-            preMaxPoint = curMaxPoint
-            preMinPoint = curMinPoint
+            updatePoints = 0
         } else {
             updatePoints++
         }
@@ -389,6 +388,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private fun updateMaxPoint() {
         if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
             curMaxPoint *= (1 + autoAmplitudeFactor)
+            preMaxPoint = curMaxPoint
         }
         if (debugLineChart) {
             Log.d(tag, "updateMaxPoint: curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
@@ -399,6 +399,7 @@ class LiveLineChartView @JvmOverloads constructor(
         if (amplitudeMode == AmplitudeMode.MAX_MIN) {
             if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 + autoAmplitudeFactor)) {
                 curMinPoint *= (1 - autoAmplitudeFactor)
+                preMinPoint = curMinPoint
             }
         } else {
             curMinPoint = -curMaxPoint
@@ -460,10 +461,8 @@ class LiveLineChartView @JvmOverloads constructor(
      * */
     fun setAmplitudeMode(amplitudeMode: AmplitudeMode) {
         this.amplitudeMode = amplitudeMode
-        updatePoints = pointList.size
         if (amplitudeMode != AmplitudeMode.FIXED) {
-            preMaxPoint = 0f
-            preMinPoint = 0f
+            updatePoints = 0
         }
     }
 

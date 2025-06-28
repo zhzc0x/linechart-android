@@ -233,6 +233,7 @@ class MainActivity : AppCompatActivity() {
             while (true) {
                 delay(16)
                 binding.liveLineChartView.addPoint((-900000..900000).random() / 10000f)
+//                binding.liveLineChartView.addPoint(56250f)
             }
         }
     }
@@ -242,5 +243,6 @@ class MainActivity : AppCompatActivity() {
             AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i))
         }
         binding.liveLineChartView.setData(yAxisList)
+        binding.liveLineChartView.setAutoAmplitudeFactor(0.00001f)
     }
 }

@@ -2,7 +2,7 @@ package com.zhzc0x.chart
 
 import androidx.annotation.ColorInt
 
-var debugLineChart = true
+var debugLineChart = false
 
 enum class AmplitudeMode {
     FIXED, // 固定模式
