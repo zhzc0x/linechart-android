@@ -46,7 +46,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private var lineChartBgColor = Color.WHITE
     private var drawCurve = false // 绘制曲线
     private var pointSpace = 1.2f.dp // 折线点间距
-
+    private var windowDuration: WindowDuration? = null
     private lateinit var linePaint: Paint
     private lateinit var lineChartPaint: Paint
     private lateinit var limitPaint: Paint
@@ -67,7 +67,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private val lineChartPath = Path()
     private var limitLinePath: Path? = null
     private var yTextHeight = 0f
-    private var screenMaxPoints = 0 // 屏幕最大点数
+    private var windowPoints = 0 // 窗口可显示点数
     private var autoAmplitudePoints = 0 // 自动缩放Y轴幅值点数
     private var autoAmplitudeFactor = 0.1f // 自动缩放阀值因子
     private var amplitudeMode = AmplitudeMode.FIXED // 幅值计算模式
@@ -170,7 +170,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private fun initData() {
         xOrigin = lineChartPaddingStart + yAxisWidth
         yOrigin = viewHeight.toFloat()
-        updateScreenMaxPoints()
+        updateWindowPoints()
         textPaint.textSize = yTextSize
         val text = "TEXT"
         val textRect = Rect()
@@ -179,17 +179,21 @@ class LiveLineChartView @JvmOverloads constructor(
         drawHeight = yOrigin - yTextHeight
     }
 
-    private fun updateScreenMaxPoints() {
-        screenMaxPoints = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
+    private fun updateWindowPoints() {
+        windowPoints = ((viewWidth - lineChartPaddingStart) / pointSpace).toInt()
         if (debugLineChart) {
-            Log.d(tag, "drawScreenWidth=${viewWidth - lineChartPaddingStart}, " +
-                    "pointSpace=${pointSpace}, screenMaxPoints=$screenMaxPoints")
+            Log.d(tag, "drawWindowWidth=${viewWidth - lineChartPaddingStart}, windowDuration=$windowDuration\n" +
+                    "pointSpace=${pointSpace}, windowPoints=$windowPoints")
         }
         // 边界case：防止页面未测量完成时出现负数
-        if (screenMaxPoints < 0) {
-            screenMaxPoints = 0
+        if (windowPoints < 0) {
+            windowPoints = 0
         }
-        autoAmplitudePoints = screenMaxPoints
+        if (windowDuration != null) {
+            autoAmplitudePoints = windowDuration!!.samplingRate
+        } else {
+            autoAmplitudePoints = windowPoints
+        }
     }
 
     private var viewWidth = 0
@@ -292,7 +296,7 @@ class LiveLineChartView @JvmOverloads constructor(
     private fun drawLineChart(canvas: Canvas) {
         lineChartPath.reset()
         pointList.forEachIndexed { index, y ->
-            endX = getDrawX(index)
+            endX = xOrigin + pointSpace * index
             endY = getDrawY(y)
             if (drawCurve) {
                 //绘制曲线（三阶贝塞尔曲线）
@@ -316,10 +320,6 @@ class LiveLineChartView @JvmOverloads constructor(
         canvas.drawPath(lineChartPath, lineChartPaint)
     }
 
-    private fun getDrawX(index: Int): Float {
-        return xOrigin + pointSpace * index
-    }
-
     private fun getDrawY(point: Float): Float {
         val temp = when {
             point > yMax -> {
@@ -337,13 +337,11 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     fun addPoint(point: Float) {
-        if (pointList.size > screenMaxPoints) {
+        if (pointList.size > windowPoints) {
             pointList.removeAt(0)
         }
         pointList.add(point)
-        if (amplitudeMode != AmplitudeMode.FIXED) {
-            calculateAmplitude(point)
-        }
+        calculateAmplitude(point)
         invalidate()
     }
 
@@ -353,6 +351,9 @@ class LiveLineChartView @JvmOverloads constructor(
     private var preMinPoint = 0f
     private var updatePoints = 0
     private fun calculateAmplitude(point: Float) {
+        if (amplitudeMode == AmplitudeMode.FIXED) {
+            return
+        }
         if (updatePoints == 0) {
             curMaxPoint = point
             curMinPoint = point
@@ -365,6 +366,7 @@ class LiveLineChartView @JvmOverloads constructor(
             updateMinPoint()
             // 减少不必要的更新
             if (curMaxPoint == curMinPoint || curMaxPoint == yMax || curMinPoint == yMin) {
+                updatePoints = 0
                 return
             }
             updateYAxisList()
@@ -389,6 +391,8 @@ class LiveLineChartView @JvmOverloads constructor(
         if (curMaxPoint > preMaxPoint || curMaxPoint < preMaxPoint * (1 - autoAmplitudeFactor)) {
             curMaxPoint *= (1 + autoAmplitudeFactor)
             preMaxPoint = curMaxPoint
+        } else {
+            curMaxPoint = preMaxPoint
         }
         if (debugLineChart) {
             Log.d(tag, "updateMaxPoint: curMaxPoint=$curMaxPoint, preMaxPoint=$preMaxPoint")
@@ -400,6 +404,8 @@ class LiveLineChartView @JvmOverloads constructor(
             if (curMinPoint < preMinPoint || curMinPoint > preMinPoint * (1 + autoAmplitudeFactor)) {
                 curMinPoint *= (1 - autoAmplitudeFactor)
                 preMinPoint = curMinPoint
+            } else {
+                curMinPoint = preMinPoint
             }
         } else {
             curMinPoint = -curMaxPoint
@@ -447,16 +453,33 @@ class LiveLineChartView @JvmOverloads constructor(
      * */
     fun setPointSpace(pointSpace: Float) {
         this.pointSpace = pointSpace
-        updateScreenMaxPoints()
-        while (pointList.size > screenMaxPoints) {
+        updateWindowPoints()
+        while (pointList.size > windowPoints) {
             pointList.removeAt(0)
         }
     }
 
     /**
+     * 设置窗口时长信息，根据窗口时长和采样率计算绘制点的间距
+     *
+     * @param windowDuration: WindowDuration
+     * @see com.zhzc0x.chart.WindowDuration
+     *
+     * */
+    fun setWindowDuration(windowDuration: WindowDuration) {
+        this.windowDuration = windowDuration
+        post {
+            if (isShown) {
+                val pointSpace = (viewWidth - xOrigin) / (windowDuration.samplingRate * (windowDuration.duration / 1000f))
+                setPointSpace(pointSpace)
+            }
+        }
+    }
+
+    /**
      * 设置幅值计算模式
-     *  @param amplitudeMode: AmplitudeMode
-     *  @see AmplitudeMode
+     * @param amplitudeMode: AmplitudeMode
+     * @see com.zhzc0x.chart.AmplitudeMode
      *
      * */
     fun setAmplitudeMode(amplitudeMode: AmplitudeMode) {
@@ -467,18 +490,18 @@ class LiveLineChartView @JvmOverloads constructor(
     }
 
     /**
-     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数，amplitudeMode != AmplitudeMode.FIXED时生效
-     *  @param screenPointMultiple: 绘制当前屏幕点数的倍数
-     *  @see screenMaxPoints
+     * 设置Y轴自动幅值计算点数，默认1窗口点数windowPoints或者采样率点数 points/s，amplitudeMode != AmplitudeMode.FIXED时生效
+     * @param autoAmplitudePoints: Int
+     *
      * */
-    fun setAutoAmplitudePoints(screenPointMultiple: Float) {
-        autoAmplitudePoints = (screenMaxPoints * screenPointMultiple).toInt()
+    fun setAutoAmplitudePoints(autoAmplitudePoints: Int) {
+        this.autoAmplitudePoints = autoAmplitudePoints
     }
 
     /**
      * 设置自动缩放Y轴幅值阀值因子，amplitudeMode != AmplitudeMode.FIXED时生效
-     *  @param factor: 控制自动缩放阀值，取值范围（0f until 1f），值越大，缩放阀值越小
-     *  @see screenMaxPoints
+     * @param factor: 控制自动缩放阀值，取值范围（0f until 1f），值越大，缩放阀值越小
+     *
      * */
     fun setAutoAmplitudeFactor(factor: Float) {
         require(factor >= 0f && factor < 1f)

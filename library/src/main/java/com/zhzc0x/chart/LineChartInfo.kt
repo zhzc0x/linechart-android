@@ -31,3 +31,7 @@ data class ShowPointInfo(
     val textPadding: Float//px
 )
 
+data class WindowDuration(
+    val duration: Int, // 窗口时长 ms
+    val samplingRate: Int // 每秒采样点
+)

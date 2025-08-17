@@ -153,19 +153,28 @@ class LiveLineChartView {
     fun setPointSpace(pointSpace: Float)
 
     /**
+     * 设置窗口时长信息，根据窗口时长和采样率计算绘制点的间距
+     *
+     * @param windowDuration: WindowDuration
+     * @see com.zhzc0x.chart.WindowDuration
+     *
+     * */
+    fun setWindowDuration(windowDuration: WindowDuration)
+    
+    /**
      * 设置幅值计算模式
      *  @param amplitudeMode: AmplitudeMode
-     *  @see AmplitudeMode
+     *  @see com.zhzc0x.chart.mplitudeMode
      *
      * */
     fun setAmplitudeMode(amplitudeMode: AmplitudeMode)
 
     /**
-     * 设置自动缩放Y轴幅值点数，默认当前屏幕绘制点数，amplitudeMode != AmplitudeMode.FIXED时生效
-     *  @param screenPointMultiple: 绘制当前屏幕点数的倍数
-     *  @see screenMaxPoints
+     * 设置Y轴自动幅值自动计算点数，默认1窗口点数windowPoints或者采样率点数 points/s，amplitudeMode != AmplitudeMode.FIXED时生效
+     * @param autoAmplitudePoints: Int
+     *
      * */
-    fun setAutoAmplitudePoints(screenPointMultiple: Float)
+    fun setAutoAmplitudePoints(autoAmplitudePoints: Int)
 
     /**
      * 设置自动缩放Y轴幅值阀值因子，amplitudeMode != AmplitudeMode.FIXED时生效

@@ -11,6 +11,7 @@ import com.zhzc0x.chart.AmplitudeMode
 import com.zhzc0x.chart.AxisInfo
 import com.zhzc0x.chart.PointInfo
 import com.zhzc0x.chart.ShowPointInfo
+import com.zhzc0x.chart.WindowDuration
 import com.zhzc0x.chart.demo.databinding.ActivityMainBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -163,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val pointSpaceList =
-            listOf("1dp", "1.2dp", "1.4dp", "1.6dp", "1.8dp", "2dp", "3dp", "4dp", "5dp")
+            listOf("", "1dp", "1.2dp", "1.4dp", "1.6dp", "1.8dp", "2dp", "3dp", "4dp", "5dp")
         binding.pointSpaceSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
             pointSpaceList
@@ -176,15 +177,16 @@ class MainActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    val pointSpace = pointSpaceList[position].replace("dp", "").toFloat()
-                    binding.liveLineChartView.setPointSpace(pointSpace)
-                    binding.liveLineChartView.setAutoAmplitudePoints(0.5f)
+                    val pointSpaceStr = pointSpaceList[position]
+                    if (pointSpaceStr.isNotEmpty()) {
+                        val pointSpace = pointSpaceList[position].replace("dp", "").toFloat().dp
+                        binding.liveLineChartView.setPointSpace(pointSpace)
+                    }
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
-        binding.pointSpaceSpinner.setSelection(pointSpaceList.lastIndex)
 
         val xLimitLineCountList = listOf("0", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")
         binding.xLimitCountSpinner.adapter = ArrayAdapter(
@@ -236,6 +238,8 @@ class MainActivity : AppCompatActivity() {
 //                binding.liveLineChartView.addPoint(56250f)
             }
         }
+
+        binding.liveLineChartView.setWindowDuration(WindowDuration(3000, 60))
     }
 
     private fun updateYAxisInfos(amplitudeRange: Float, yLimitCount: Int) {
@@ -243,6 +247,5 @@ class MainActivity : AppCompatActivity() {
             AxisInfo((amplitudeRange - amplitudeRange * 2 / (yLimitCount - 1) * i))
         }
         binding.liveLineChartView.setData(yAxisList)
-        binding.liveLineChartView.setAutoAmplitudeFactor(0.00001f)
     }
 }
