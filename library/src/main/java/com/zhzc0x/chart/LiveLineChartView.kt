@@ -539,7 +539,7 @@ class LiveLineChartView @JvmOverloads constructor(
             throw IllegalArgumentException("yAxisList.size must be greater than 1 !")
         }
         this.yAxisList.clear()
-        this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, this.textConverter(it.value)) })
+        this.yAxisList.addAll(yAxisList.map { AxisInfo(it.value, textConverter(it.value)) })
         this.textConverter = textConverter
         updateAmplitude()
         if (yMax <= yMin) {
