@@ -72,6 +72,8 @@ class LiveLineChartView @JvmOverloads constructor(
     private var autoAmplitudeFactor = 0.1f // 自动缩放阀值因子
     private var amplitudeMode = AmplitudeMode.FIXED // 幅值计算模式
 
+    private var drawBoundary = true // 是否绘制边界线
+
     init {
         if (attrs != null) {
             initCustomAttrs(context, attrs)
@@ -310,10 +312,14 @@ class LiveLineChartView @JvmOverloads constructor(
                 startY = endY
             } else {
                 //绘制折线
-                if (index == 0) {
-                    lineChartPath.moveTo(endX, endY)
+                if (index > 0) {
+                    if (!drawBoundary && (endY == yMax || endY == yMin)) {
+                        lineChartPath.moveTo(endX, endY)
+                    } else {
+                        lineChartPath.lineTo(endX, endY)
+                    }
                 } else {
-                    lineChartPath.lineTo(endX, endY)
+                    lineChartPath.moveTo(endX, endY)
                 }
             }
         }
@@ -322,15 +328,9 @@ class LiveLineChartView @JvmOverloads constructor(
 
     private fun getDrawY(point: Float): Float {
         val temp = when {
-            point > yMax -> {
-                yMax
-            }
-            point < yMin -> {
-                yMin
-            }
-            else -> {
-                point
-            }
+            point > yMax -> yMax
+            point < yMin -> yMin
+            else -> point
         }
         //处理负值的情况，但是point的y值必须在最大值和最小值之间
         return drawHeight - drawHeight * ((temp - yMin) / (yMax - yMin)) + yTextHeight / 2
@@ -517,6 +517,12 @@ class LiveLineChartView @JvmOverloads constructor(
                 throw IllegalArgumentException("xLimitLineCount must be greater than 1 !")
             }
         }
+        invalidate()
+    }
+
+    /** 设置是否绘制边界线（最大值或最小值），默认true */
+    fun setDrawBoundary(drawBoundary: Boolean) {
+        this.drawBoundary = drawBoundary
         invalidate()
     }
 
