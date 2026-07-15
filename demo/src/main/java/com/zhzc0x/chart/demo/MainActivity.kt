@@ -3,6 +3,7 @@ package com.zhzc0x.chart.demo
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -13,8 +14,11 @@ import com.zhzc0x.chart.PointInfo
 import com.zhzc0x.chart.ShowPointInfo
 import com.zhzc0x.chart.WindowDuration
 import com.zhzc0x.chart.demo.databinding.ActivityMainBinding
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.sin
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val pointXInitValueList = listOf(0, 12, 24)
     private var pointXStartDp = 0
     private var pointXEndDp = 0
+    private var mockEegJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         var xLimitCount = 0
         var yLimitCount = 2
-        val yAmplitudeRangeList = listOf("100", "0.2", "0.4", "0.6", "0.8", "1", "2", "4", "自动-MAX_NEGATE", "自动-MAX_MIN")
+        val yAmplitudeRangeList = listOf("100", "0.2", "0.4", "0.6", "0.8", "1", "2", "4", "8", "自动-MAX_NEGATE", "自动-MAX_MIN")
         var curAmplitudeRange = 0f
         binding.yMaxSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
@@ -149,10 +154,13 @@ class MainActivity : AppCompatActivity() {
                 position: Int, id: Long
             ) {
                 if (position == yAmplitudeRangeList.size - 1) {
+                    binding.liveLineChartView.setDrawBoundary(true)
                     binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.MAX_MIN)
                 } else if (position == yAmplitudeRangeList.size - 2) {
+                    binding.liveLineChartView.setDrawBoundary(true)
                     binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.MAX_NEGATE)
                 } else {
+                    binding.liveLineChartView.setDrawBoundary(false)
                     binding.liveLineChartView.setAmplitudeMode(AmplitudeMode.FIXED)
                     curAmplitudeRange = yAmplitudeRangeList[position].toFloat()
                     updateYAxisInfos(curAmplitudeRange, yLimitCount)
@@ -164,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val pointSpaceList =
-            listOf("", "1dp", "1.2dp", "1.4dp", "1.6dp", "1.8dp", "2dp", "3dp", "4dp", "5dp")
+            listOf("", "1dp", "1.2dp", "1.4dp", "1.6dp", "1.8dp", "2dp", "3dp", "4dp", "5dp", "10dp")
         binding.pointSpaceSpinner.adapter = ArrayAdapter(
             this, R.layout.item_spinner_textview,
             pointSpaceList
@@ -230,16 +238,36 @@ class MainActivity : AppCompatActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
-        lifecycleScope.launch {
-            delay(1000)
-            while (true) {
-                delay(16)
-                binding.liveLineChartView.addPoint((-900000..900000).random() / 10000f)
-//                binding.liveLineChartView.addPoint(56250f)
+        binding.liveLineChartView.setWindowDuration(WindowDuration(3000, 60))
+        binding.btnMockData.setOnClickListener {
+            if (mockEegJob != null) {
+                stopMockData()
+            } else {
+                startMockData()
             }
         }
+        startMockData()
+    }
 
-        binding.liveLineChartView.setWindowDuration(WindowDuration(3000, 60))
+    private fun startMockData() {
+        mockEegJob = lifecycleScope.launch {
+            delay(1000)
+            var i = 0
+            while (isActive) {
+                delay(16)
+//                binding.liveLineChartView.addPoint((-900000..900000).random() / 10000f)
+                val point = (sin(2 * Math.PI * 50.0 * (i / 250.0))).toFloat() * 20
+                binding.liveLineChartView.addPoint(point)
+                i++
+            }
+        }
+        binding.btnMockData.text = "停止"
+    }
+
+    private fun stopMockData() {
+        mockEegJob?.cancel()
+        mockEegJob = null
+        binding.btnMockData.text = "开始"
     }
 
     private fun updateYAxisInfos(amplitudeRange: Float, yLimitCount: Int) {

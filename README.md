@@ -189,13 +189,19 @@ class LiveLineChartView {
     /** 设置x轴y轴限定线条数 */
     fun setLimitLineCount(xLimitLineCount: Int, yLimitLineCount: Int)
 
+    /** 设置是否绘制边界线（最大值或最小值），默认true */
+    fun setDrawBoundary(drawBoundary: Boolean) {
+      this.drawBoundary = drawBoundary
+      invalidate()
+    }
+    
     /**
      * 设置折线数据
      *
      * @param yAxisList Y轴数据集合
      * @param amplitudeMode 幅值计算模式，默认AmplitudeMode.FIXED
      * @see AmplitudeMode
-     * @param textConverter 文本转换
+     * @param textConverter Y轴显示文本转换
      *
      * */
     @JvmOverloads

@@ -297,11 +297,13 @@ class LiveLineChartView @JvmOverloads constructor(
     private var endY: Float = 0f
     private fun drawLineChart(canvas: Canvas) {
         lineChartPath.reset()
+        var preMaxBoundary = false
+        var preMinBoundary = false
         pointList.forEachIndexed { index, y ->
             endX = xOrigin + pointSpace * index
             endY = getDrawY(y)
             if (drawCurve) {
-                //绘制曲线（三阶贝塞尔曲线）
+                // 绘制曲线（三阶贝塞尔曲线）
                 if (index == 0) {
                     lineChartPath.moveTo(endX, endY)
                 } else {
@@ -311,15 +313,23 @@ class LiveLineChartView @JvmOverloads constructor(
                 startX = endX
                 startY = endY
             } else {
-                //绘制折线
-                if (index > 0) {
-                    if (!drawBoundary && (endY == yMax || endY == yMin)) {
+                // 绘制折线
+                if (index <= 0) {
+                    lineChartPath.moveTo(endX, endY)
+                    return
+                }
+                if (!drawBoundary) {
+                    val isMaxBoundary = y >= yMax
+                    val isMinBoundary = y <= yMin
+                    if ((isMaxBoundary && preMaxBoundary) || (isMinBoundary && preMinBoundary)) {
                         lineChartPath.moveTo(endX, endY)
                     } else {
                         lineChartPath.lineTo(endX, endY)
                     }
+                    preMaxBoundary = isMaxBoundary
+                    preMinBoundary = isMinBoundary
                 } else {
-                    lineChartPath.moveTo(endX, endY)
+                    lineChartPath.lineTo(endX, endY)
                 }
             }
         }
@@ -532,7 +542,7 @@ class LiveLineChartView @JvmOverloads constructor(
      * @param yAxisList Y轴数据集合
      * @param amplitudeMode 幅值计算模式，默认AmplitudeMode.FIXED
      * @see AmplitudeMode
-     * @param textConverter 文本转换
+     * @param textConverter Y轴显示文本转换
      *
      * */
     @JvmOverloads
