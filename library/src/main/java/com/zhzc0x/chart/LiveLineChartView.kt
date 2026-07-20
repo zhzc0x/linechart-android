@@ -316,7 +316,7 @@ class LiveLineChartView @JvmOverloads constructor(
                 // 绘制折线
                 if (index <= 0) {
                     lineChartPath.moveTo(endX, endY)
-                    return
+                    return@forEachIndexed
                 }
                 if (!drawBoundary) {
                     val isMaxBoundary = y >= yMax
